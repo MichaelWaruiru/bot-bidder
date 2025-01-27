@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+        .btn { background-color: #28a745; color: white; padding: 10px 20px; border: none; cursor: pointer; border-radius: 5px; }
+        .btn:hover { background-color: #218838; }
+        .message { padding: 10px; border-radius: 5px; margin-bottom: 10px; }
+        .success { background-color: #d4edda; color: #155724; }
+        .danger { background-color: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h2>Welcome, {{ username }}</h2>
+
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="message {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <h3>Your Access Token</h3>
+    <div>
+      <input type="text" id="accessTokenField" value="{{ access_token }}" readonly style="width: 100%; padding: 10px;">
+      <button class="btn" onclick="copyAccessToken()">Copy Token</button>
+    </div>
+
+    <h3>Subscription Payment</h3>
+    <p>The subscription fee is: <strong id="amount">KES {{ amount }}</strong></p>
+
+    <form action="/pay" method="POST">
+        <button type="submit" class="btn">Pay Now</button>
+    </form>
+
+    <p><a href="/logout">Logout</a></p>
+
+    <script>
+      const API_BASE_URL = "http://127.0.0.1:5000/dashboard";
+      const accessToken = "{{ access_token }}";  // Access token from the backend
+
+      function copyAccessToken() {
+        const tokenField = document.getElementById("accessTokenField");
+        tokenField.select();
+        tokenField.setSelectionRange(0, 99999); // For mobile devices
+        document.execCommand("copy");
+
+        // Provide feedback to the user
+        alert("Access token copied to clipboard!");
+      }
+      
+      // Function to fetch subscription price
+      async function fetchSubscriptionPrice() {
+        try {
+          const response = await fetch(`${API_BASE_URL}/get-subscription-price`, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to fetch subscription price");
+          }
+          const data = await response.json();
+          document.getElementById("amount").innerText = `KES ${data.amount}`;
+        } catch (error) {
+          document.getElementById("message").innerText = "Error fetching subscription price.";
+          console.error("Error fetching subscription price:", amount);
+          
+        }
+      }
+
+        // Load subscription price when page loads
+        fetchSubscriptionPrice();
+    </script>
+</body>
+</html>

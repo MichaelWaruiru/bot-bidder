@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin: auto; }
+        input, button { width: 100%; padding: 10px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Bot Dashboard</h1>
+
+    <!-- Activate Bot Form -->
+    <button onclick="activateBot()">Activate Bot</button>
+
+    <!-- Bot Status -->
+    <p id="botStatus"></p>
+
+    <script>
+        const API_BASE_URL = "http://localhost:5000/api/bot";
+
+        // Activate bot
+        async function activateBot() {
+            const token = localStorage.getItem('access_token');
+            try {
+                const response = await fetch(`${API_BASE_URL}/activate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await response.json();
+                alert(data.msg);
+            } catch (error) {
+                console.error("Error activating bot:", error);
+            }
+        }
+
+        // Check bot status
+        async function checkBotStatus() {
+            const token = localStorage.getItem('access_token');
+            try {
+                const response = await fetch(`${API_BASE_URL}/status`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                document.getElementById('botStatus').innerText = `Bot Status: ${data.bot_active ? "Active" : "Inactive"}`;
+            } catch (error) {
+                console.error("Error checking bot status:", error);
+            }
+        }
+
+        // Call checkBotStatus when the page loads
+        checkBotStatus();
+    </script>
+</body>
+</html>

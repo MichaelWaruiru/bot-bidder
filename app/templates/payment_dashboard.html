@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Dashboard</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            max-width: 500px; 
+            margin: auto; 
+        }
+        input, button { 
+            width: 100%; 
+            padding: 10px; 
+            margin-bottom: 10px; 
+        }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>Subscription Dashboard</h1>
+    
+    <label for="phoneNumber">Phone Number (+2547xxxxxxxx):</label>
+    <input type="text" id="phoneNumber" placeholder="Enter phone number">
+
+    <label for="token">JWT Token:</label>
+    <input type="text" id="token" placeholder="Enter JWT token">
+
+    <p>Subscription Amount: <strong id="amount">KES: Loading...</strong></p>
+
+    <button onclick="handlePayment()">Pay Now</button>
+    <button onclick="checkSubscriptionStatus()">Check Subscription Status</button>
+
+    <p id="subscriptionStatus"></p>
+    <p id="message" class="error"></p>
+
+    <script>
+        const API_BASE_URL = "http://127.0.0.1:5000/api/subscription";
+        // Function to fetch subscription price from the server
+        async function fetchSubscriptionPrice() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/get-subscription-price`);
+                if (!response.ok) {
+                    throw new Error("Failed to fetch subscription price");
+                }
+                const data = await response.json();
+                document.getElementById('amount').innerText = `KES ${data.amount}`;
+            } catch (error) {
+                document.getElementById('message').innerText = "Error fetching subscription price.";
+                console.error("Error fetching subscription price:", error);
+            }
+        }
+
+        function handlePayment() {
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const token = document.getElementById('token').value;
+
+            // Validate phone number format
+            const phoneRegex = /^\+2547\d{8}$/;
+            if (!phoneRegex.test(phoneNumber)) {
+                document.getElementById('message').textContent = "Invalid phone number format. Please use +2547xxxxxxxx.";
+                return;
+            }
+
+            // Prepare data for the backend request as JSON
+            const requestData = {
+                phoneNumber: phoneNumber
+            };
+
+            // Make a POST request to initiate payment (send as JSON)
+            fetch(`${API_BASE_URL}/initiate-payment`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'  // Set Content-Type to application/json
+                },
+                body: JSON.stringify(requestData)  // Send data as JSON
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('message').textContent = "Payment initiated successfully!";
+                    document.getElementById('message').classList.remove('error');
+                    document.getElementById('message').classList.add('success');
+                } else {
+                    document.getElementById('message').textContent = data.error || "An error occurred during payment.";
+                }
+            })
+            .catch(error => {
+                document.getElementById('message').textContent = "An error occurred while initiating payment.";
+            });
+        }
+
+        // Function to check subscription status
+        async function checkSubscriptionStatus() {
+            const token = document.getElementById('token').value.trim();
+            const messageElement = document.getElementById('subscriptionStatus');
+
+            if (!token) {
+                messageElement.innerText = "Token is required!";
+                return;
+            }
+
+            messageElement.innerText = "";
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/status`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch subscription status.");
+                }
+
+                const data = await response.json();
+                messageElement.innerText = `Subscription Status: ${data.bot_active ? "Active" : "Inactive"}`;
+            } catch (error) {
+                messageElement.innerText = "Error checking subscription status.";
+                console.error("Error checking subscription status:", error);
+            }
+        }
+
+        // Load subscription price when page loads
+        fetchSubscriptionPrice();
+    </script>
+</body>
+</html>

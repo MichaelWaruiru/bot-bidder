@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin: auto; }
+        input, button { width: 100%; padding: 10px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h2>Register</h2>
+    <form action="/api/auth/register" method="POST">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" placeholder="Username" required>
+        <br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" placeholder="Email" required>
+        <br>
+
+        <label for="phone_number">Phone Number:</label>
+        <input type="text" id="phone_number" name="phone_number" placeholder="Phone Number" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" placeholder="Password" required>
+        <br>
+
+        <button type="submit">Register</button>
+    </form>
+
+    <div class="link">
+        <p>Already have an account? <a href="/api/auth/login">Login here</a></p>
+    </div>
+</body>
+</html>
