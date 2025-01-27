@@ -63,7 +63,10 @@ def login():
 
     user = user_model.get_user_by_email(email)
     if user and bcrypt.check_password_hash(user[4], password):
-        access_token = create_access_token(identity={"email": email, "id": user[0], "phone_number": user[3]})
+        access_token = create_access_token(
+            identity=email, # Use email as the identity (must be a string)
+            additional_claims={"id": user[0], "phone_number": user[3]}
+        )
         session["access_token"] = access_token
         flash("Login successful!", "success")
         return render_template("dashboard.html", access_token=access_token)

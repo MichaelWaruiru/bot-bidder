@@ -24,6 +24,7 @@ def create_app():
   app.config['MYSQL_DB'] = os.getenv('MYSQL_DB')
   app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
   app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
+  app.config["JWT_ACCESS_TOKEN_EXPIRES"] = 3600  # 1 hour expiration
   
   mysql.init_app(app)
   bcrypt.init_app(app)

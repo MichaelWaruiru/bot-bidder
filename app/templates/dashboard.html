@@ -23,24 +23,32 @@
             {% endfor %}
         {% endif %}
     {% endwith %}
+    
+    {% if access_token %}
     <h3>Your Access Token</h3>
     <div>
-      <input type="text" id="accessTokenField" value="{{ access_token }}" readonly style="width: 100%; padding: 10px;">
-      <button class="btn" onclick="copyAccessToken()">Copy Token</button>
+        <input type="text" id="accessTokenField" value="{{ access_token }}" readonly style="width: 100%; padding: 10px; margin-bottom: 10px;">
+        <button class="btn" onclick="copyAccessToken()">Copy Token</button>
     </div>
+    {% else %}
+        <p style="color: green;">Your subscription is active. Enjoy your services!</p>
+    {% endif %}
 
     <h3>Subscription Payment</h3>
     <p>The subscription fee is: <strong id="amount">KES {{ amount }}</strong></p>
 
-    <form action="/pay" method="POST">
-        <button type="submit" class="btn">Pay Now</button>
+    <form action="/dashboard/pay" method="POST">
+        <button type="button" class="btn" onclick="paySubscription()">Pay Now</button>
     </form>
+
+    <p id="message" style="color: red;"></p>
 
     <p><a href="/logout">Logout</a></p>
 
     <script>
       const API_BASE_URL = "http://127.0.0.1:5000/dashboard";
       const accessToken = "{{ access_token }}";  // Access token from the backend
+      console.log("Using access token:", accessToken);
 
       function copyAccessToken() {
         const tokenField = document.getElementById("accessTokenField");
@@ -72,6 +80,35 @@
           
         }
       }
+
+      async function paySubscription() {
+        const token = localStorage.getItem("access_token") || "{{ access_token }}";
+        if (!token) {
+            alert("Authorization token is missing. Please log in again.");
+            return;
+        }
+
+        try {
+            const response = await fetch("/dashboard/pay", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            const data = await response.text();
+            if (response.ok) {
+                alert("Payment request sent successfully. Please check your phone.");
+                location.reload();
+            } else {
+                document.getElementById("message").innerText = "Payment failed. " + data;
+            }
+        } catch (error) {
+            console.error("Error processing payment:", error);
+            document.getElementById("message").innerText = "Error processing payment.";
+        }
+    }
 
         // Load subscription price when page loads
         fetchSubscriptionPrice();
