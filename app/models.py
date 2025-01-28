@@ -22,6 +22,13 @@ class UserModel:
     cursor.close()
     return user
   
+  def get_user_by_username(self, username):
+    cursor = self.mysql.connection.cursor()
+    cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+    user = cursor.fetchone()
+    cursor.close()
+    return user
+  
   def get_user_subscription_status(self, user_id):
         cursor = self.mysql.connection.cursor()
         cursor.execute("SELECT bot_active FROM users WHERE id = %s", (user_id,))
