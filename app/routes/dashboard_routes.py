@@ -45,15 +45,21 @@ def get_subscription_price():
 @jwt_required()
 def pay():
     """Handle payment request via MPesa STK push"""
-    user = get_jwt() # Retrieves phone_number from additional claims
+    user = get_jwt()
+    print(f"JWT Identity: {user}")  # Log JWT identity
     
+    # user_data = user_model.get_user_by_phone_no(user[3])  # Access user phone number
     phone_number = user.get("phone_number")
+    print(f"User Phone No: {phone_number}")  # Log user data
+
     if not phone_number:
         flash("Phone number not found!", "danger")
         return redirect(url_for("dashboard_bp.dashboard"))
       
     # Retrieve user data using the phone number
     user_data = user_model.get_user_by_phone_no(phone_number)
+    print(f"User Data: {user_data}")  # Log user data
+
     if not user_data:
         flash("User not found!", "danger")
         return redirect(url_for("dashboard_bp.dashboard"))
@@ -63,12 +69,17 @@ def pay():
     print(f"Formatted Phone Number: {formatted_phone_number}")
 
     try:
+        print(f"Initiating payment for phone: {formatted_phone_number}, amount: {SUBSCRIPTION_AMOUNT}")
+
         response = initiate_payment(formatted_phone_number, int(SUBSCRIPTION_AMOUNT))
+        print("MPesa Response:", response)
+
         if response.get("ResponseCode") == "0":
             flash("Payment request sent successfully. Please check your phone.", "success")
         else:
             flash(f"Payment request failed: {response.get('errorMessage')}", "danger")
     except Exception as e:
         flash(f"Error processing payment: {str(e)}", "danger")
+        print("Error processing payment:", e)
 
     return redirect(url_for("dashboard_bp.dashboard"))
