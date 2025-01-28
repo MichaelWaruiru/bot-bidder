@@ -10,7 +10,14 @@ class UserModel:
     
   def get_user_by_email(self, email):
     cursor = self.mysql.connection.cursor()
-    cursor.execute("SELECT * FROM users WHERE EMAIL = %s", (email,))
+    cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+    user = cursor.fetchone()
+    cursor.close()
+    return user
+  
+  def get_user_by_phone_no(self, phone_number):
+    cursor = self.mysql.connection.cursor()
+    cursor.execute("SELECT * FROM users WHERE phone_number = %s", (phone_number,))
     user = cursor.fetchone()
     cursor.close()
     return user
