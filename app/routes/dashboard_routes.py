@@ -13,13 +13,10 @@ SUBSCRIPTION_AMOUNT = os.getenv("SUBSCRIPTION_AMOUNT")
 
 
 @dashboard_bp.route("/dashboard", methods=["GET"])
-@jwt_required()  # ✅ Now reads token from cookies
+@jwt_required()  # Reads token from cookies
 def dashboard():
-    user_email = get_jwt_identity()  # ✅ JWT identity contains email
-    print("JWT Identity (Email):", user_email)  # Debugging
-
-    user_claims = get_jwt()  # ✅ Get full claims
-    print("JWT Claims:", user_claims)  # Debugging
+    user_email = get_jwt_identity()  # JWT identity contains email
+    user_claims = get_jwt()  #  Get full claims
 
     user_data = user_model.get_user_by_email(user_email)
     if not user_data:
