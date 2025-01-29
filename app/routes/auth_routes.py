@@ -1,6 +1,6 @@
-from flask import Blueprint, request, session, render_template, flash, redirect, url_for
+from flask import Blueprint, request, render_template, flash, redirect, url_for
 from app import mysql, bcrypt
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, set_access_cookies, unset_jwt_cookies
 from app.models import UserModel
 from app.utils.validation import validate_phone_number
 
@@ -12,6 +12,7 @@ user_model = UserModel(mysql)
 @auth_bp.route("/register", methods=["GET"])
 def register_page():
     return render_template("register.html")
+
 
 # Route to handle registration form submission
 @auth_bp.route("/register", methods=["POST"])
@@ -36,6 +37,7 @@ def register():
     flash(f"{username} has been registered successfully!", "success")
     return redirect(url_for("auth_bp.login_page"))
 
+
 def format_phone_number(phone):
     """Ensure phone number is in +254 format"""
     phone = phone.strip().replace(" ", "")  # Remove spaces
@@ -49,27 +51,42 @@ def format_phone_number(phone):
         return "+254" + phone       # Add prefix if missing
     return validate_phone_number(phone)
 
+
 # Route to render the login form
 @auth_bp.route("/login", methods=["GET"])
 def login_page():
     return render_template("login.html")
 
+
 # Route to handle login form submission
 @auth_bp.route("/login", methods=["POST"])
 def login():
-    # data = request.get_json()
     email = request.form.get("email")
     password = request.form.get("password")
 
     user = user_model.get_user_by_email(email)
     if user and bcrypt.check_password_hash(user[4], password):
         access_token = create_access_token(
-            identity=email, # Use email as the identity (must be a string)
-            additional_claims={"id": user[0], "phone_number": user[3]}
+            identity=email,  # Must be a string
+            additional_claims={  
+                "id": user[0],
+                "username": user[1],
+                "phone_number": user[3]
+            }
         )
-        session["access_token"] = access_token
+
+        response = redirect(url_for("dashboard_bp.dashboard")) 
+        set_access_cookies(response, access_token)  # Store JWT as a cookie
         flash("Login successful!", "success")
-        return render_template("dashboard.html", access_token=access_token)
-    else:
-        flash("Invalid credentials", "danger")
-        return redirect(url_for("auth_bp.login_page"))
+        return response
+
+    flash("Invalid credentials", "danger")
+    return redirect(url_for("auth_bp.login_page"))
+
+
+@auth_bp.route("/logout", methods=["POST"])
+def logout():
+    response = redirect(url_for("auth_bp.login_page"))
+    unset_jwt_cookies(response)
+    flash("You have been logged out successfully.", "success")
+    return response
