@@ -3,25 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dashboard.css') }}">
     <title>Dashboard</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; }
-        .btn { background-color: #28a745; color: white; padding: 10px 20px; border: none; cursor: pointer; border-radius: 5px; }
-        .btn:hover { background-color: #218838; }
-        .message { padding: 10px; border-radius: 5px; margin-bottom: 10px; }
-        .success { background-color: #d4edda; color: #155724; }
-        .danger { background-color: #f8d7da; color: #721c24; }
-    </style>
 </head>
 <body>
     <h2>Welcome, {{ username }}</h2>
 
     {% with messages = get_flashed_messages(with_categories=True) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="message {{ category }}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
+      {% if messages %}
+          <div id="flash-messages">
+              {% for category, message in messages %}
+                  <div class="message {{ category }}">{{ message }}</div>
+              {% endfor %}
+          </div>
+      {% endif %}
     {% endwith %}
     
     {% if access_token %}
@@ -126,6 +121,20 @@
         alert("Error during logout");
       }
     }
+
+    // Automatically remove flash messages after 3 seconds
+    document.addEventListener("DOMContentLoaded", function () {
+      const flashMessages = document.getElementById("flash-messages");
+      
+      if (flashMessages) {
+          setTimeout(() => {
+              flashMessages.style.transition = "opacity 0.5s ease-out";
+              flashMessages.style.opacity = "0";
+              setTimeout(() => flashMessages.remove(), 500); // Remove after fade-out
+          }, 3000); // 3-second timer
+      }
+    });
+    
         // Load subscription price when page loads
         fetchSubscriptionPrice();
     </script>
