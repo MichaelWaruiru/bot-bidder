@@ -24,15 +24,21 @@ def create_app():
   app.config['MYSQL_DB'] = os.getenv('MYSQL_DB')
   app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
   app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
+
+  # Store JWT in cookies instead of headers
+  app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
+  app.config["JWT_COOKIE_SECURE"] = False  # Set True in production
+  app.config["JWT_ACCESS_COOKIE_NAME"] = "access_token_cookie"
   app.config["JWT_ACCESS_TOKEN_EXPIRES"] = 3600  # 1 hour expiration
-  
+  app.config["JWT_COOKIE_CSRF_PROTECT"] = False  # Disable CSRF for now
+
   mysql.init_app(app)
   bcrypt.init_app(app)
   jwt.init_app(app)
-  
-  # Enable CORS for a specific origin
-  CORS(app, resources={r"/api/*": {"origins": "*"}}, allow_headers=["Content-Type", "Authorization"], supports_credentials=True)  # Allow only from 127.0.0.1
-  
+
+  # Fix CORS Issues
+  CORS(app, supports_credentials=True)  
+
   # Debugging MySQL connection
   try:
       with app.app_context():
@@ -43,14 +49,14 @@ def create_app():
           cur.close()
   except Exception as e:
       print(f"Database connection failed: {e}")
-  
-  # Register routes here to avoid circular imports
+
+  # Register routes here
   from app.routes.auth_routes import auth_bp
   from app.routes.bot_routes import bot_bp
   from app.routes.dashboard_routes import dashboard_bp
-  
+
   app.register_blueprint(auth_bp, url_prefix="/api/auth")
   app.register_blueprint(bot_bp, url_prefix="/api/bot")
   app.register_blueprint(dashboard_bp, url_prefix="/dashboard")
-  
+
   return app

@@ -43,12 +43,14 @@
 
     <p id="message" style="color: red;"></p>
 
-    <p><a href="/logout">Logout</a></p>
+    <p><a href="#" onclick="logoutUser()">Logout</a></p>
 
     <script>
       const API_BASE_URL = "http://127.0.0.1:5000/dashboard";
-      const accessToken = "{{ access_token }}";  // Access token from the backend
-      console.log("Using access token:", accessToken);
+    
+      const token = "{{ session['access_token'] }}";  // Get token from session
+
+      console.log("Using access token:", token);
 
       function copyAccessToken() {
         const tokenField = document.getElementById("accessTokenField");
@@ -64,8 +66,10 @@
       async function fetchSubscriptionPrice() {
         try {
           const response = await fetch(`${API_BASE_URL}/get-subscription-price`, {
+            method: "GET",
             headers: {
-                'Authorization': `Bearer ${accessToken}`
+                'Authorization': `Bearer ${token}`,
+                "Content-Type": "application/json"
             }
           });
 
@@ -81,18 +85,12 @@
         }
       }
 
-      async function paySubscription() {
-        const token = localStorage.getItem("access_token") || "{{ access_token }}";
-        if (!token) {
-            alert("Authorization token is missing. Please log in again.");
-            return;
-        }
-
+    async function paySubscription() {
         try {
             const response = await fetch("/dashboard/pay", {
                 method: "POST",
+                credentials: "include",  // Send cookies automatically
                 headers: {
-                    "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
                 }
             });
@@ -110,6 +108,24 @@
         }
     }
 
+    async function logoutUser() {
+      try {
+        const response = await fetch("/api/auth/logout", {
+          method: "POST",
+          credentials: "include"
+        });
+
+        if (response.ok) {
+          alert("Logout successful!");
+          window.location.href="/api/auth/login";
+        } else {
+          alert("Logout failed. Please try again.")
+        }
+      } catch (error) {
+        console.error("Error during logout:", error);
+        alert("Error during logout");
+      }
+    }
         // Load subscription price when page loads
         fetchSubscriptionPrice();
     </script>
