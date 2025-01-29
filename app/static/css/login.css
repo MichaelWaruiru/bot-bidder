@@ -1,0 +1,29 @@
+body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  max-width: 500px;
+  margin: auto;
+}
+
+input,
+button {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.message {
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.success {
+  background-color: hsl(134, 41%, 88%);
+  color: hsl(134, 61%, 21%);
+}
+
+.danger {
+  background-color: hsl(355, 70%, 91%);
+  color: hsl(354, 61%, 28%);
+}
