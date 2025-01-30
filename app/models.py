@@ -43,33 +43,40 @@ class UserModel:
     cursor.close()
     
     
-def log_payment_attempt(self, user_id, phone_number, amount, status, reason=None):
-  """Logs each payment attempt into the database"""
-  cursor = self.mysql.connection.cursor()
-  cursor.execute("INSERT INTO payment_attempts (user_id, phone_number, amount, status, reason)", user_id, phone_number, amount, status, reason)
-  self.mysql.connection.commit()
-  cursor.close()
-  
-
-def get_payment_attempts(self, user_id):
-  """Fetches a user's payment attempts."""
-  cursor = self.mysql.connection.cursor()
-  cursor.execute("""SELECT phone_number, amount, status, reason, attempt_time 
-                    FROM payment_attempts WHERE user_id = %s ORDER BY attempt_time DESC""", 
-                    (user_id,)
-                )
-  attempts = cursor.fetchall()
-  cursor.close()
-  return attempts
+  def update_last_login_ip(self, user_id, ip_address):
+      cursor = self.mysql.connection.cursor()
+      cursor.execute("UPDATE users SET last_login_ip = %s WHERE id = %s", (ip_address, user_id))
+      self.mysql.connection.commit()
+      cursor.close()
 
 
-def count_failed_attempts(self, user_id):
-    """Counts the number of failed attempts for a user in the last hour"""
+  def log_payment_attempt(self, user_id, phone_number, amount, status, reason=None):
+    """Logs each payment attempt into the database"""
     cursor = self.mysql.connection.cursor()
-    cursor.execute("""SELECT COUNT(*) FROM payment_attempts 
-                      WHERE user_id = %s AND status = 'failed' AND created_at >= NOW() - INTERVAL 1 HOUR""", 
+    cursor.execute("INSERT INTO payment_attempts (user_id, phone_number, amount, status, reason)", user_id, phone_number, amount, status, reason)
+    self.mysql.connection.commit()
+    cursor.close()
+    
+
+  def get_payment_attempts(self, user_id):
+    """Fetches a user's payment attempts."""
+    cursor = self.mysql.connection.cursor()
+    cursor.execute("""SELECT phone_number, amount, status, reason, attempt_time 
+                      FROM payment_attempts WHERE user_id = %s ORDER BY attempt_time DESC""", 
                       (user_id,)
                   )
-    failed_count = cursor.fetchone()[0]
+    attempts = cursor.fetchall()
     cursor.close()
-    return failed_count
+    return attempts
+
+
+  def count_failed_attempts(self, user_id):
+      """Counts the number of failed attempts for a user in the last hour"""
+      cursor = self.mysql.connection.cursor()
+      cursor.execute("""SELECT COUNT(*) FROM payment_attempts 
+                        WHERE user_id = %s AND status = 'failed' AND created_at >= NOW() - INTERVAL 1 HOUR""", 
+                        (user_id,)
+                    )
+      failed_count = cursor.fetchone()[0]
+      cursor.close()
+      return failed_count

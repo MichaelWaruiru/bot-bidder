@@ -66,6 +66,18 @@ def login():
 
     user = user_model.get_user_by_email(email)
     if user and bcrypt.check_password_hash(user[4], password):
+        # Get user IP address
+        user_ip = request.remote_addr
+        
+        # Check if the IP address has changed since last login
+        if user[8] and user [8] != user_ip:
+            flash("Suspicious activity detected. This account is being accessed from a different IP.", "danger")
+            return redirect(url_for("auth_bp.login_page"))
+        
+        # Update last login IP in the database
+        user_model.update_last_login_ip(user[0], user_ip)
+        
+        # Generate JWT token
         access_token = create_access_token(
             identity=email,  # Must be a string
             additional_claims={  
