@@ -33,3 +33,41 @@ body {
   background-color: #f8d7da;
   color: hsl(354, 61%, 28%);
 }
+
+input,
+#work_type {
+  width: 100%;
+  padding: 18px;
+  margin: 15px 5px;
+  border-radius: 10px;
+  border: none;
+  font-size: 14px;
+  box-shadow: 0 4px 8px hsla(0, 0%, 0%, 0.2);
+}
+
+.selected-options {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.selected-options .option {
+  background-color: #e0e0e0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.selected-options .option span {
+  margin-right: 10px;
+}
+
+.selected-options .option button {
+  background: none;
+  border: none;
+  color: red;
+  cursor: pointer;
+}
