@@ -71,3 +71,73 @@ input,
   color: red;
   cursor: pointer;
 }
+
+.top-bar {
+display: inline-block;
+}
+
+.logout-btn {
+  background-color: hsl(0, 100%, 50%);
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  text-decoration: none;
+  box-shadow: 0 4px 8px hsla(0, 0%, 0%, 0.2);
+}
+
+.logout-btn:hover {
+  background-color: hsl(0, 100%, 40%);
+  color: white;
+}
+
+/* Style the bidding history table */
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 16px;
+  text-align: left;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.styled-table thead {
+  background-color: #4CAF50;
+  color: hsl(0, 0%, 100%);
+  font-weight: bold;
+}
+
+.styled-table th,
+.styled-table td {
+  padding: 12px;
+  border-bottom: 1px solid hsl(0, 0%, 87%);
+}
+
+.styled-table tbody tr:nth-child(even) {
+  background-color: hsl(0, 0%, 95%);
+}
+
+/* Color-code bid status */
+.accepted .status-cell {
+  background-color: hsl(134, 61%, 41%);
+  color: hsl(0, 0%, 100%);
+  font-weight: bold;
+}
+
+.rejected .status-cell {
+  background-color: hsl(354, 70%, 54%);
+  color: hsl(0, 0%, 100%);
+  font-weight: bold;
+}
+
+.pending .status-cell {
+  background-color: hsl(45, 100%, 51%);
+  color: hsl(0, 0%, 0%);
+  font-weight: bold;
+}
+
+/* Hover effect */
+.styled-table tbody tr:hover {
+  background-color: #ddd;
+}
