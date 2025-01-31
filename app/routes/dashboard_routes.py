@@ -1,8 +1,8 @@
-from flask import Blueprint, render_template, session, flash, redirect, url_for, jsonify
+from flask import Blueprint, render_template, session, flash, redirect, url_for, jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required, get_jwt
 from app.utils.mpesa import initiate_payment
 from app.utils.validation import validate_phone_number
-from app.models import UserModel
+from app.models import UserModel, BidsModel
 from app import mysql
 import logging
 from flask_limiter import Limiter
@@ -11,12 +11,13 @@ import os
 
 dashboard_bp = Blueprint("dashboard_bp", __name__)
 user_model = UserModel(mysql)
+bids_model = BidsModel(mysql)
 
 # Load subscription amount
 SUBSCRIPTION_AMOUNT = os.getenv("SUBSCRIPTION_AMOUNT")
 
 # Rate limiter for mpesa payments
-limiter = Limiter(get_remote_address)
+limiter = Limiter(get_remote_address) # Remove app=mysql
 
 # Setup logging for suspicious activities
 logging.basicConfig(level=logging.INFO)
@@ -36,13 +37,17 @@ def dashboard():
         flash("User not found!", "danger")
         return redirect(url_for("auth_bp.login_page"))
 
+    # Get user's bidding history
+    bidding_history = bids_model.get_bidding_history(user_data[0])
+    
     subscription_active = user_data[5]  # Subscription status
     access_token = session.get("access_token") if not subscription_active else None
 
     return render_template("dashboard.html",
                            username=user_claims["username"],  # Username from JWT claims
                            access_token=access_token, # Show only if subscription is not active
-                           amount=SUBSCRIPTION_AMOUNT)
+                           amount=SUBSCRIPTION_AMOUNT,
+                           bidding_history=bidding_history)
 
 
 @dashboard_bp.route("/get-subscription-price", methods=["GET"])
@@ -114,4 +119,29 @@ def pay():
         flash(f"Error processing payment: {str(e)}", "danger")
         print("Error processing payment:", e)
 
+    return redirect(url_for("dashboard_bp.dashboard"))
+
+@dashboard_bp.route("/bid", methods=["POST"])
+@jwt_required()
+def place_bid():
+    """Handle manual bid request"""
+    user_email = get_jwt_identity()
+    user_data = user_model.get_user_by_email(user_email)
+    
+    if not user_data:
+        flash("User not found", "danger")
+        return redirect(url_for("dashboard_bp.dashboard"))
+    
+    # Get form data
+    work_type = request.form.get("work_type")
+    hours_to_submission = request.form.get("hours_to_submission")
+
+    if not work_type or not hours_to_submission:
+        flash("Please fill in all fields before placing a bid.", "danger")
+        return redirect(url_for("dashboard_bp.dashboard"))
+    
+    # Store the manual bid
+    bids_model.create_bid(user_data[0], work_type, hours_to_submission)
+    
+    flash("Bid placed successfully!", "success")
     return redirect(url_for("dashboard_bp.dashboard"))

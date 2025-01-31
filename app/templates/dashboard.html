@@ -10,9 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </head>
 <body>
-    <h2>Welcome, {{ username }}</h2>
-
-    {% with messages = get_flashed_messages(with_categories=True) %}
+  {% with messages = get_flashed_messages(with_categories=True) %}
       {% if messages %}
           <div id="flash-messages">
               {% for category, message in messages %}
@@ -21,6 +19,13 @@
           </div>
       {% endif %}
     {% endwith %}
+
+  <div class="top-bar">
+    <h2>Welcome, {{ username }}</h2>
+    <p><a href="#" class="logout-btn" onclick="logoutUser()">Logout</a></p>
+  </div>
+
+    
     
     {% if access_token %}
     <h3>Your Access Token</h3>
@@ -67,9 +72,30 @@
       <button type="submit" class="btn">Place Bid</button>
     </form>
 
-    <p id="message" style="color: red;"></p>
+    <h3>Bidding History</h3>
+    <table class="styled-table">
+      <thead>
+        <tr>
+          <th>Work Type</th>
+          <th>Hours Before Submission</th>
+          <th>Bid Time</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for bid in bidding_history %}
+        <tr class="{% if bid.status == 'ACCEPTED' %}accepted{% elif bid.status == 'REJECTED' %}rejected{% else %}pending{% endif %}">
+          <td>{{ bid.work_type }}</td>
+          <td>{{ bid.hours_to_submission }} hours</td>
+          <td>{{ bid.bid_time }}</td>
+          <td class="status-cell">{{ bid.status }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 
-    <p><a href="#" onclick="logoutUser()">Logout</a></p>
+
+    <p id="message" style="color: red;"></p>
 
     <script>
       const API_BASE_URL = "http://127.0.0.1:5000/dashboard";
