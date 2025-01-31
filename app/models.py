@@ -80,3 +80,59 @@ class UserModel:
       failed_count = cursor.fetchone()[0]
       cursor.close()
       return failed_count
+    
+
+class BiddingPreferenceModel:
+  # Handles user preferences for automated bidding
+  def __init__(self, mysql):
+     self.mysql = mysql
+     
+  
+  def set_user_preferences(self, user_id, work_types, hours_to_submission):
+    # Save or update user bidding preferences
+    cursor = self.mysql.connection.cursor()
+    cursor.execute("""INSERT INTO bidding_preferences (user_id, work_types, hours_to_submission) VALUES (%s, %s, %s) 
+                      ON DUPLICATE KEY UPDATE work_types = VALUES(work_types), hours_to_submission = VALUES(hours_to_submission)""",
+                      (user_id, ",".join(work_types), hours_to_submission)
+                  )
+    self.mysql.connection.commit()
+    cursor.close()
+    
+    
+  def get_user_preferences(self, user_id):
+    # Retrieves user bidding preferences
+    cursor = self.mysql.connection.cursor()
+    cursor.execute("SELECT work_types, hours_to_submission FROM bidding_preferences WHERE user_id = %s", (user_id,))
+    row = cursor.fetchone()
+    cursor.close()
+    
+    if row:
+      return {"work_types": row[0].split(","), "hours_to_submission": row[1]}
+    return {"work_types": [], "hours_to_submission": 0}
+  
+  
+class BidsModel:
+    """Handles manual bids from users."""
+    def __init__(self, mysql):
+        self.mysql = mysql
+
+    def create_bid(self, user_id, work_type, hours_to_submission):
+        """Stores a manual bid in the database."""
+        cursor = self.mysql.connection.cursor()
+        cursor.execute("""
+            INSERT INTO bids (user_id, work_type, hours_to_submission, bid_time, status)
+            VALUES (%s, %s, %s, NOW(), 'PENDING')
+        """, (user_id, work_type, hours_to_submission))
+        self.mysql.connection.commit()
+        cursor.close()
+
+    def get_bidding_history(self, user_id):
+        """Retrieve a user's past manual bids."""
+        cursor = self.mysql.connection.cursor()
+        cursor.execute("""
+            SELECT work_type, hours_to_submission, bid_time, status
+            FROM bids WHERE user_id = %s ORDER BY bid_time DESC
+        """, (user_id,))
+        history = cursor.fetchall()
+        cursor.close()
+        return history
