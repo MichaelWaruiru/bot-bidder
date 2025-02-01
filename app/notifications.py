@@ -1,7 +1,5 @@
-from flask_mail import Mail, Message
-from app import app
-
-mail = Mail(app)
+from flask_mail import Message
+from app import mail
 
 def send_bid_notification(email, job_title):
     """Send an email notification to the user."""
