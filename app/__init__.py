@@ -5,12 +5,14 @@ from flask_mysqldb import MySQL
 from dotenv import load_dotenv
 import os
 from flask_cors import CORS
+from flask_mail import Mail
 
 load_dotenv()
 
 mysql = MySQL()
 bcrypt = Bcrypt()
 jwt = JWTManager()
+mail = Mail()
 
 
 def create_app():
@@ -24,6 +26,14 @@ def create_app():
   app.config['MYSQL_DB'] = os.getenv('MYSQL_DB')
   app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
   app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
+  
+  # SMTP configurations
+  app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
+  app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT', 587))
+  app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS', 'true').lower() in ['true', '1', 'yes']
+  app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+  app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+  app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
 
   # Store JWT in cookies instead of headers
   app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
@@ -35,6 +45,7 @@ def create_app():
   mysql.init_app(app)
   bcrypt.init_app(app)
   jwt.init_app(app)
+  mail.init_app(app)
 
   # Fix CORS Issues
   CORS(app, supports_credentials=True)  
