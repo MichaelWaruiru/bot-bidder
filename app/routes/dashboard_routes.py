@@ -7,6 +7,7 @@ from app import mysql
 import logging
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from app.bot import auto_bid_on_jobs
 import os
 
 dashboard_bp = Blueprint("dashboard_bp", __name__)
@@ -124,7 +125,7 @@ def pay():
 @dashboard_bp.route("/bid", methods=["POST"])
 @jwt_required()
 def place_bid():
-    """Handle manual bid request"""
+    """Handle automatic bid request and trigger the bot"""
     user_email = get_jwt_identity()
     user_data = user_model.get_user_by_email(user_email)
     
@@ -135,13 +136,28 @@ def place_bid():
     # Get form data
     work_type = request.form.get("work_type")
     hours_to_submission = request.form.get("hours_to_submission")
-
-    if not work_type or not hours_to_submission:
+    bid_amount = request.form.get("bid_amount")
+    # Debug: Print individual values
+    print("Selected Work Type:", work_type)
+    print("Hours Before Submission:", hours_to_submission)
+    print("Bid Amount:", bid_amount)
+    
+    if not work_type or not hours_to_submission or not bid_amount:
         flash("Please fill in all fields before placing a bid.", "danger")
         return redirect(url_for("dashboard_bp.dashboard"))
     
     # Store the manual bid
-    bids_model.create_bid(user_data[0], work_type, hours_to_submission)
+    bids_model.create_bid(user_data[0], work_type, hours_to_submission, bid_amount)
+    
+    # Check if the bot is active, then trigger automatic bidding
+    bot_status = user_model.get_user_subscription_status(user_data[0]["id"])
+    if bot_status == "active":
+        # Trigger the bot with the work type and hours to submission
+        jobs = [{"id": 1, "title": f"Job for {work_type}"}]  # Example job data, modify based on actual data
+        auto_bid_on_jobs(user_data[0]["id"], jobs)
+        flash("Automatic bid placed successfully!", "success")
+    else:
+        flash("Bot is not active. Manual bidding only.", "warning")
     
     flash("Bid placed successfully!", "success")
     return redirect(url_for("dashboard_bp.dashboard"))
