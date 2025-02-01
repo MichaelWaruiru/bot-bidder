@@ -5,7 +5,7 @@ import time
 from app.models import UserModel
 from app.notifications import send_bid_notification
 
-def auto_bid_on_jobs(user_id, jobs):
+def auto_bid_on_jobs(user_id, jobs, bid_amount):
     """Automate the bidding process for matched jobs."""
     user_data = UserModel.get_user_by_id(user_id)
     login_url = "https://edusson.com/login"  # Example site
@@ -29,7 +29,8 @@ def auto_bid_on_jobs(user_id, jobs):
         driver.get(bid_url)
         time.sleep(2)
 
-        driver.find_element(By.NAME, "bid_amount").send_keys("20")  # Set bid amount
+        # Use the dynamic bid amount here
+        driver.find_element(By.NAME, "bid_amount").send_keys(bid_amount)
         driver.find_element(By.NAME, "cover_letter").send_keys("I am the best fit for this job.")
         driver.find_element(By.ID, "bid-btn").click()
         time.sleep(2)
