@@ -39,7 +39,7 @@ class UserModel:
   def update_bot_status(self, user_id, status):
     cursor = self.mysql.connection.cursor()
     cursor.execute("UPDATE users SET bot_active = %s WHERE id = %s", status, user_id)
-    self.mysql.connection.cursor()
+    self.mysql.connection.commit()
     cursor.close()
     
     
@@ -53,7 +53,7 @@ class UserModel:
   def log_payment_attempt(self, user_id, phone_number, amount, status, reason=None):
     """Logs each payment attempt into the database"""
     cursor = self.mysql.connection.cursor()
-    cursor.execute("INSERT INTO payment_attempts (user_id, phone_number, amount, status, reason)", user_id, phone_number, amount, status, reason)
+    cursor.execute("INSERT INTO payment_attempts (user_id, phone_number, amount, status, reason) VALUES (%s, %s, %s, %s, %s)", user_id, phone_number, amount, status, reason)
     self.mysql.connection.commit()
     cursor.close()
     
@@ -88,13 +88,18 @@ class BiddingPreferenceModel:
      self.mysql = mysql
      
   
-  def set_user_preferences(self, user_id, work_types, hours_to_submission):
+  def set_user_preferences(self, user_id, work_types, hours_to_submission, bid_amount):
     # Save or update user bidding preferences
     cursor = self.mysql.connection.cursor()
-    cursor.execute("""INSERT INTO bidding_preferences (user_id, work_types, hours_to_submission) VALUES (%s, %s, %s) 
-                      ON DUPLICATE KEY UPDATE work_types = VALUES(work_types), hours_to_submission = VALUES(hours_to_submission)""",
-                      (user_id, ",".join(work_types), hours_to_submission)
-                  )
+    cursor.execute("""
+        INSERT INTO bidding_preferences (user_id, work_types, hours_to_submission, bid_amount) 
+        VALUES (%s, %s, %s, %s) 
+        ON DUPLICATE KEY UPDATE work_types = VALUES(work_types), 
+                                hours_to_submission = VALUES(hours_to_submission), 
+                                bid_amount = VALUES(bid_amount)
+        """, 
+        (user_id, work_types, hours_to_submission, bid_amount)
+    )
     self.mysql.connection.commit()
     cursor.close()
     
