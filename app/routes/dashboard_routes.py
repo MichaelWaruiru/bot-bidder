@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, session, flash, redirect, url_for, jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required, get_jwt
+from jwt.exceptions import ExpiredSignatureError
 from app.utils.mpesa import initiate_payment
 from app.utils.validation import validate_phone_number
 from app.models import UserModel, BidsModel
@@ -30,6 +31,7 @@ MAX_FAILED_ATTEMPTS = 3
 @dashboard_bp.route("/dashboard", methods=["GET"])
 @jwt_required()  # Reads token from cookies
 def dashboard():
+    """Render user's dashboard"""
     user_email = get_jwt_identity()  # JWT identity contains email
     user_claims = get_jwt()  #  Get full claims
 
@@ -40,15 +42,17 @@ def dashboard():
 
     # Get user's bidding history
     bidding_history = bids_model.get_bidding_history(user_data[0])
-    
-    subscription_active = user_data[5]  # Subscription status
-    access_token = session.get("access_token") if not subscription_active else None
+    subscription_data = user_model.get_user_subscription_status(user_claims["id"])
+
+    # subscription_active = user_data[5]  # Subscription status
+    # access_token = session.get("access_token") if not subscription_active else None
 
     return render_template("dashboard.html",
-                           username=user_claims["username"],  # Username from JWT claims
-                           access_token=access_token, # Show only if subscription is not active
-                           amount=SUBSCRIPTION_AMOUNT,
-                           bidding_history=bidding_history)
+                            username=user_claims["username"],  # Username from JWT claims
+                        #    access_token=access_token, # Show only if subscription is not active
+                        #    amount=SUBSCRIPTION_AMOUNT,
+                            subscription_data=subscription_data,
+                            bidding_history=bidding_history)
 
 
 @dashboard_bp.route("/get-subscription-price", methods=["GET"])
@@ -161,3 +165,10 @@ def place_bid():
     
     flash("Bid placed successfully!", "success")
     return redirect(url_for("dashboard_bp.dashboard"))
+  
+
+@dashboard_bp.errorhandler(ExpiredSignatureError)
+def handle_expired_token(error):
+  """Handle expired JWT tokens redirecting the user to login page."""
+  flash("Your session has expired. Please log in again.", "warning")
+  return redirect(url_for("auth_bp.login_page"))
