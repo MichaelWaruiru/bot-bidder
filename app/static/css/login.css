@@ -38,3 +38,13 @@ button {
   background-color: hsl(355, 70%, 91%);
   color: hsl(354, 61%, 28%);
 }
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+#flash-messages {
+  animation: fadeOut 10s forwards;
+}
