@@ -9,6 +9,7 @@ import logging
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from app.bot import auto_bid_on_jobs
+from datetime import datetime, timedelta
 import os
 
 dashboard_bp = Blueprint("dashboard_bp", __name__)
@@ -46,12 +47,25 @@ def dashboard():
 
     # subscription_active = user_data[5]  # Subscription status
     # access_token = session.get("access_token") if not subscription_active else None
+    # Check subscription status and expiry
+    subscription_active = False
+    access_token = None
+    if subscription_data:
+      subscription_active = subscription_data['subscription_active']
+      subscription_expiry = subscription_data['subscription_expiry']
+      if subscription_expiry and subscription_expiry > datetime.now():
+          subscription_active = True
+      else:
+          subscription_active = False
+
+    if not subscription_active:
+      access_token = session.get("access_token")
 
     return render_template("dashboard.html",
                             username=user_claims["username"],  # Username from JWT claims
-                        #    access_token=access_token, # Show only if subscription is not active
-                        #    amount=SUBSCRIPTION_AMOUNT,
-                            subscription_data=subscription_data,
+                            access_token=access_token, # Show only if subscription is not active
+                            amount=SUBSCRIPTION_AMOUNT,
+                            subscription_active=subscription_active,
                             bidding_history=bidding_history)
 
 
@@ -108,6 +122,10 @@ def pay():
             flash("Payment request sent successfully. Please check your phone.", "success")
             logger.info(f"Payment request successful for phone: {formatted_phone_number}")
             
+            # Update subscription status and expiry date on successful payments
+            subscription_expiry = datetime.now() + timedelta(days=30)
+            user_model.update_subscription_status(user_data[0], True, subscription_expiry)
+            
             # Reset failed attempts on success
             session["failed_payment_attempts"] = 0
         else:
@@ -116,7 +134,7 @@ def pay():
             flash(f"Payment request failed: {response.get('errorMessage')}", "danger")
             
             #  Warn user after 3 failed attempts
-            if session["failed_attempts"] >= MAX_FAILED_ATTEMPTS:
+            if session["failed_payment_attempts"] >= MAX_FAILED_ATTEMPTS:
                 flash("You have exceeded the maximum number of payment attempts. Please try again later.", "warning")
                 logger.warning(f"User {formatted_phone_number} exceeded max payment attempts.")
     except Exception as e:

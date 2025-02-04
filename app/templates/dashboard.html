@@ -70,6 +70,8 @@
       <br>
     </form>
 
+    <button class="btn" type="submit">Place Bid</button>
+
     <h3>Bidding History</h3>
     <table class="styled-table">
       <thead>
@@ -130,7 +132,7 @@
           document.getElementById("amount").innerText = `KES ${data.amount}`;
         } catch (error) {
           document.getElementById("message").innerText = "Error fetching subscription price.";
-          console.error("Error fetching subscription price:", amount);
+          console.error("Error fetching subscription price:", error);
           
         }
       }

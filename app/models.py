@@ -39,10 +39,17 @@ class UserModel:
   
   def get_user_subscription_status(self, user_id):
     cursor = self.mysql.connection.cursor()
-    cursor.execute("SELECT bot_active FROM users WHERE id = %s", (user_id,))
+    cursor.execute("SELECT subscription_active, subscription_expiry FROM users WHERE id = %s", (user_id,))
     status = cursor.fetchone()
     cursor.close()
     return status[0] if status else 'inactive'
+  
+  def update_subscription_status(self, user_id, subscription_active, subscription_expiry):
+    cursor = self.mysql.connection.cursor()
+    cursor.execute("UPDATE users SET subscription_active = %s, subscription_expiry = %s WHERE id = %s", 
+                    (subscription_active, subscription_expiry, user_id))
+    self.mysql.connection.commit()
+    cursor.close()
   
   def update_bot_status(self, user_id, status):
     cursor = self.mysql.connection.cursor()
