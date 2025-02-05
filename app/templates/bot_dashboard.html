@@ -16,33 +16,30 @@
     <p id="botStatus"></p>
 
     <script>
-        const API_BASE_URL = "http://localhost:5000/api/bot";
+        const API_BASE_URL = "http://127.0.0.1:5000/api/bot";
 
-        // Activate bot
+        // Activate bot (using session authentication)
         async function activateBot() {
-            const token = localStorage.getItem('access_token');
             try {
                 const response = await fetch(`${API_BASE_URL}/activate`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    }
+                    credentials: "include", // Use cookies for authentication
+                    headers: { 'Content-Type': 'application/json' }
                 });
                 const data = await response.json();
                 alert(data.msg);
+                checkBotStatus(); // Refresh status after activation
             } catch (error) {
                 console.error("Error activating bot:", error);
             }
         }
 
-        // Check bot status
+        // Check bot status (using cookies)
         async function checkBotStatus() {
-            const token = localStorage.getItem('access_token');
             try {
                 const response = await fetch(`${API_BASE_URL}/status`, {
                     method: 'GET',
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    credentials: "include" // Use session authentication via cookies
                 });
                 const data = await response.json();
                 document.getElementById('botStatus').innerText = `Bot Status: ${data.bot_active ? "Active" : "Inactive"}`;
@@ -51,7 +48,7 @@
             }
         }
 
-        // Call checkBotStatus when the page loads
+        // Check bot status when the page loads
         checkBotStatus();
     </script>
 </body>
