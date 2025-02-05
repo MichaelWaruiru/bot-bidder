@@ -44,12 +44,12 @@ class UserModel:
     cursor.execute("SELECT subscription_active, subscription_expiry FROM users WHERE id = %s", (user_id,))
     result = cursor.fetchone()
     cursor.close()
-    
+
     if result:
       subscription_active, subscription_expiry = result
       is_active = bool(subscription_active) and (subscription_expiry and subscription_expiry > datetime.now())
       return {
-          "subscription_active": is_active,
+          "subscription_active": is_active,  # Convert to boolean
           "subscription_expiry": subscription_expiry
       }
     

@@ -60,6 +60,7 @@ def dashboard():
 
 
 @dashboard_bp.route("/get-subscription-price", methods=["GET"])
+@jwt_required()
 def get_subscription_price():
   """Fetch the static subscription price"""
   return jsonify({"amount": SUBSCRIPTION_AMOUNT}), 200
