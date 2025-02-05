@@ -47,13 +47,10 @@ def dashboard():
     
     # Extract subscription details
     subscription_active = subscription_data["subscription_active"]
-    
-    # Show access token only if subscription is NOT active
-    access_token = None if subscription_active else session.get("access_token")
 
     return render_template("dashboard.html",
                             username=user_claims["username"],  # Username from JWT claims
-                            access_token=access_token, # Show only if subscription is not active
+                            # access_token=access_token, # Show only if subscription is not active
                             amount=SUBSCRIPTION_AMOUNT,
                             subscription_active=subscription_active,
                             bidding_history=bidding_history)
@@ -66,7 +63,7 @@ def get_subscription_price():
   return jsonify({"amount": SUBSCRIPTION_AMOUNT}), 200
 
 
-@dashboard_bp.route("/pay", methods=["POST"])
+@dashboard_bp.route("/pay", methods=["GET", "POST"])
 @jwt_required()
 @limiter.limit("3 per minute")
 def pay():
@@ -109,9 +106,12 @@ def pay():
 
         response = initiate_payment(formatted_phone_number, int(SUBSCRIPTION_AMOUNT))
 
-        if response.get("ResponseCode") == "0":
+        if response and response.get("ResponseCode") == "0":
             flash("Payment request sent successfully. Please check your phone.", "success")
             logger.info(f"Payment request successful for phone: {formatted_phone_number}")
+            
+            # Save successful payment to prevent future inconsistencies
+            user_model.log_payment_attempt(user_data[0], formatted_phone_number, SUBSCRIPTION_AMOUNT, "successful")
             
             # Update subscription status and expiry date on successful payments
             subscription_expiry = datetime.now() + timedelta(days=30)

@@ -28,19 +28,15 @@
     {% if subscription_active %}
       <p style="color: green;">Your subscription is active. Enjoy your services!</p>
     {% else %}
-      <h3>Your Access Token</h3>
-      <div>
-          <input type="text" id="accessTokenField" value="{{ access_token }}" readonly>
-          <button class="btn" onclick="copyAccessToken()">Copy Token</button>
-      </div>
-    {% endif %}
+      <p style="color: red; font-weight: bold;">Bot is inactive.
+        <a href="/dashboard/pay">Subscribe</a>
+      </p>
+      <p>The subscription fee is: <strong id="amount">KES {{ amount }}</strong></p>
 
-    <h3>Subscription Payment</h3>
-    <p>The subscription fee is: <strong id="amount">KES {{ amount }}</strong></p>
-
-    <form action="/dashboard/pay" method="POST">
+      <form action="/dashboard/pay" method="POST">
         <button type="button" class="btn" onclick="paySubscription()">Pay Now Via M-Pesa</button>
-    </form>
+      </form>
+    {% endif %}
 
     <h3>Bidding Preferences</h3>
     <form action="/dashboard/bid" method="POST">
@@ -104,16 +100,7 @@
 
       console.log("Using access token:", token);
 
-      function copyAccessToken() {
-        const tokenField = document.getElementById("accessTokenField");
-        tokenField.select();
-        tokenField.setSelectionRange(0, 99999); // For mobile devices
-        document.execCommand("copy");
 
-        // Provide feedback to the user
-        alert("Access token copied to clipboard!");
-      }
-      
       // Function to fetch subscription price
       async function fetchSubscriptionPrice() {
         try {

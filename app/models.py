@@ -41,18 +41,34 @@ class UserModel:
   
   def get_user_subscription_status(self, user_id):
     cursor = self.mysql.connection.cursor()
-    cursor.execute("SELECT subscription_active, subscription_expiry FROM users WHERE id = %s", (user_id,))
+    cursor.execute("""SELECT u.subscription_active, u.subscription_expiry, 
+                        (SELECT COUNT(*) FROM payment_attempts WHERE user_id = u.id AND status = 'successful') AS payments_made
+                      FROM users u WHERE u.id = %s
+                  """, (user_id,)
+                  )
     result = cursor.fetchone()
     cursor.close()
 
     if result:
-      subscription_active, subscription_expiry = result
-      is_active = bool(subscription_active) and (subscription_expiry and subscription_expiry > datetime.now())
+      subscription_active, subscription_expiry, payments_made = result
+
+      # Only active if user has a valid payment and subscription is not expired
+      if payments_made > 0 and subscription_active and subscription_expiry and subscription_expiry > datetime.now():
+        is_active = True
+      else:
+        is_active = False  # Expired or never subscribed
+
+        # Auto-reset expired subscription
+        cursor = self.mysql.connection.cursor()
+        cursor.execute("""UPDATE users SET subscription_active = 0 WHERE id = %s AND subscription_expiry <= NOW()""", (user_id,))
+        self.mysql.connection.commit()
+        cursor.close()
+
       return {
-          "subscription_active": is_active,  # Convert to boolean
-          "subscription_expiry": subscription_expiry
+        "subscription_active": is_active,
+        "subscription_expiry": subscription_expiry
       }
-    
+
     return {"subscription_active": False, "subscription_expiry": None}
   
   def update_subscription_status(self, user_id, subscription_active, subscription_expiry):
