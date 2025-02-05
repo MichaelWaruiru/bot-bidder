@@ -25,14 +25,14 @@
     <p><a href="#" class="logout-btn" onclick="logoutUser()">Logout</a></p>
   </div>
 
-    {% if access_token %}
-    <h3>Your Access Token</h3>
-    <div>
-        <input type="text" id="accessTokenField" value="{{ access_token }}" readonly style="width: 100%; padding: 10px; margin-bottom: 10px;">
-        <button class="btn" onclick="copyAccessToken()">Copy Token</button>
-    </div>
+    {% if subscription_active %}
+      <p style="color: green;">Your subscription is active. Enjoy your services!</p>
     {% else %}
-        <p style="color: green;">Your subscription is active. Enjoy your services!</p>
+      <h3>Your Access Token</h3>
+      <div>
+          <input type="text" id="accessTokenField" value="{{ access_token }}" readonly>
+          <button class="btn" onclick="copyAccessToken()">Copy Token</button>
+      </div>
     {% endif %}
 
     <h3>Subscription Payment</h3>

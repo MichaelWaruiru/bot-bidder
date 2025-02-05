@@ -44,22 +44,12 @@ def dashboard():
     # Get user's bidding history
     bidding_history = bids_model.get_bidding_history(user_data[0])
     subscription_data = user_model.get_user_subscription_status(user_claims["id"])
-
-    # subscription_active = user_data[5]  # Subscription status
-    # access_token = session.get("access_token") if not subscription_active else None
-    # Check subscription status and expiry
-    subscription_active = False
-    access_token = None
-    if subscription_data:
-      subscription_active = subscription_data['subscription_active']
-      subscription_expiry = subscription_data['subscription_expiry']
-      if subscription_expiry and subscription_expiry > datetime.now():
-          subscription_active = True
-      else:
-          subscription_active = False
-
-    if not subscription_active:
-      access_token = session.get("access_token")
+    
+    # Extract subscription details
+    subscription_active = subscription_data["subscription_active"]
+    
+    # Show access token only if subscription is NOT active
+    access_token = None if subscription_active else session.get("access_token")
 
     return render_template("dashboard.html",
                             username=user_claims["username"],  # Username from JWT claims

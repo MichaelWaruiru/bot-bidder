@@ -1,3 +1,5 @@
+from datetime import datetime
+
 class UserModel:
   def __init__(self, mysql):
     self.mysql = mysql
@@ -40,9 +42,18 @@ class UserModel:
   def get_user_subscription_status(self, user_id):
     cursor = self.mysql.connection.cursor()
     cursor.execute("SELECT subscription_active, subscription_expiry FROM users WHERE id = %s", (user_id,))
-    status = cursor.fetchone()
+    result = cursor.fetchone()
     cursor.close()
-    return status[0] if status else 'inactive'
+    
+    if result:
+      subscription_active, subscription_expiry = result
+      is_active = bool(subscription_active) and (subscription_expiry and subscription_expiry > datetime.now())
+      return {
+          "subscription_active": is_active,
+          "subscription_expiry": subscription_expiry
+      }
+    
+    return {"subscription_active": False, "subscription_expiry": None}
   
   def update_subscription_status(self, user_id, subscription_active, subscription_expiry):
     cursor = self.mysql.connection.cursor()
