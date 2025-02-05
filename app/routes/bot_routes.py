@@ -14,7 +14,7 @@ def bot_dashboard():
 @jwt_required()
 def activate_bot():
     user = get_jwt_identity()
-    user_data = user_model.get_user_by_email(user["email"])
+    user_data = user_model.get_user_by_email(user[2])
     
     if user_data and user_data[5]:  # subscription_active
         user_model.update_bot_status(user_data[0], True)
@@ -25,7 +25,7 @@ def activate_bot():
 @jwt_required()
 def bot_status():
     user = get_jwt_identity()
-    user_data = user_model.get_user_by_email(user["email"])
+    user_data = user_model.get_user_by_email(user[2])
 
     if user_data:
         return jsonify({"bot_active": bool(user_data[6])}), 200
