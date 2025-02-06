@@ -8,7 +8,6 @@ from app import mysql
 import logging
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from app.bot import auto_bid_on_jobs
 from datetime import datetime, timedelta
 import os
 
@@ -138,7 +137,9 @@ def pay():
 @dashboard_bp.route("/bid", methods=["POST"])
 @jwt_required()
 def place_bid():
-    """Handle automatic bid request and trigger the bot"""
+    """Handle automatic bid request and trigger Celery task"""
+    from app.tasks import automated_bidding # Import inside function to avoid circular dependency
+    
     user_email = get_jwt_identity()
     user_data = user_model.get_user_by_email(user_email)
     
@@ -162,17 +163,10 @@ def place_bid():
     # Store the manual bid
     bids_model.create_bid(user_data[0], work_type, hours_to_submission, bid_amount)
     
-    # Check if the bot is active, then trigger automatic bidding
-    bot_status = user_model.get_user_subscription_status(user_data[0]["id"])
-    if bot_status == "active":
-        # Trigger the bot with the work type and hours to submission
-        jobs = [{"id": 1, "title": f"Job for {work_type}"}]  # Example job data, modify based on actual data
-        auto_bid_on_jobs(user_data[0]["id"], jobs)
-        flash("Automatic bid placed successfully!", "success")
-    else:
-        flash("Bot is not active. Manual bidding only.", "warning")
+    # Start the Celery task for automated bidding
+    automated_bidding.delay()
     
-    flash("Bid placed successfully!", "success")
+    flash("Bid placed successfully! Automated bidding will continue.", "success")
     return redirect(url_for("dashboard_bp.dashboard"))
   
 

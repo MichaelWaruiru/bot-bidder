@@ -10,13 +10,20 @@ app = create_app()
 celery = make_celery(app)
 
 @celery.task
-def automated_bidding():
-    """Scrapes jobs, filters them, and bids automatically."""
+def automated_bidding(self):
+    """Scrapes jobs, filters them, and bids automatically for subscribed users."""
     with app.app_context():
-        jobs = scrape_jobs()
-        users = UserModel(mysql).get_all_users()
+        try:
+            jobs = scrape_jobs()
+            users = UserModel(mysql).get_all_users()
 
-        for user in users:
-            matched_jobs = filter_jobs_for_user(user["id"], jobs)
-            if matched_jobs:
-                auto_bid_on_jobs(user["id"], matched_jobs)
+            for user in users:
+                subscription_data = UserModel(mysql).get_user_subscription_status(user["id"])
+                
+                if subscription_data["subscription_active"]:
+                    matched_jobs = filter_jobs_for_user(user["id"], jobs)
+                    if matched_jobs:
+                        auto_bid_on_jobs(user["id"], matched_jobs)
+                        
+        except Exception as e:
+            self.retry(exc=e, countdown=60) # Retry after 60 seconds if failed
