@@ -39,6 +39,11 @@ button {
   color: hsl(354, 61%, 28%);
 }
 
+.warning {
+  background-color: hsl(43, 83%, 81%);
+  color: hsl(43, 83%, 31%);
+}
+
 @keyframes fadeOut {
   0% { opacity: 1; }
   90% { opacity: 1; }
