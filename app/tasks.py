@@ -15,7 +15,8 @@ def automated_bidding(self):
     with app.app_context():
         try:
             jobs = scrape_jobs()
-            users = UserModel(mysql).get_all_users()
+            user_model = UserModel(mysql)
+            users = user_model.get_all_users()
 
             for user in users:
                 subscription_data = UserModel(mysql).get_user_subscription_status(user["id"])

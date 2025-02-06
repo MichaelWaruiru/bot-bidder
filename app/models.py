@@ -18,6 +18,15 @@ class UserModel:
     finally:
       cursor.close()
       
+  def get_all_users(self):
+    cursor = self.mysql.connection.cursor()
+    cursor.execute("SELECT id, email, subscription_active FROM users")
+    users = cursor.fetchall()
+    cursor.close()
+    
+    # Convert results to a list of disctionaries
+    return [{"id": user[0], "email": user[1], "subscription_active": bool(user[2])} for user in users]
+      
   def get_user_by_email(self, email):
     cursor = self.mysql.connection.cursor()
     cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
