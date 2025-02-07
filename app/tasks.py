@@ -9,7 +9,7 @@ from app import mysql
 app = create_app()
 celery = make_celery(app)
 
-@celery.task(bind=True)
+@celery.task(bind=True, name="tasks.automated_bidding")
 def automated_bidding(self):
     """Scrapes jobs, filters them, and bids automatically for subscribed users."""
     with app.app_context():
@@ -23,7 +23,7 @@ def automated_bidding(self):
                 
                 if subscription_data["subscription_active"]:
                     preferences = BiddingPreferenceModel(mysql).get_user_preferences(user["id"])
-                    work_types = preferences["work_types"]
+                    work_types = str(preferences["work_types"])
                     hours_to_submission = preferences["hours_to_submission"]
                     bid_amount = preferences["bid_amount"]
                     

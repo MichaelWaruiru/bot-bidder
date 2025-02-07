@@ -33,7 +33,7 @@
     {% endif %}
 
     <h3>Set Bidding Preferences</h3>
-    <form id="biddingForm">
+    <form id="biddingForm" onSubmit="event.preventDefault(); savePreferences();">
         <label for="work_type">Choose Work Type:</label>
         <select name="work_type" id="work_type" required>
             <option value="" disabled selected>Select work type...</option>
@@ -192,7 +192,10 @@
                     const data = await response.json();
                     document.getElementById("hours_to_submission").value = data.hours_to_submission || "";
                     document.getElementById("bid_amount").value = data.bid_amount || "";
-                    localStorage.setItem(selectedOptionsKey, JSON.stringify(data.work_types.split(",")));
+                    const workTypes = Array.isArray(data.work_types) 
+                      ? data.work_types 
+                      : (typeof data.work_types === "string" ? data.work_types.split(",") : []);
+                    localStorage.setItem(selectedOptionsKey, JSON.stringify(work_types));
                     displaySelectedOptions();
                 }
             } catch (error) {

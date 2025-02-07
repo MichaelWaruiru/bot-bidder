@@ -10,6 +10,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from datetime import datetime, timedelta
 from app.models import BiddingPreferenceModel
+# from app.celery import celery
 import os
 
 dashboard_bp = Blueprint("dashboard_bp", __name__)
@@ -139,7 +140,7 @@ def pay():
 @jwt_required()
 def place_bid():
     """Handle automatic bid request and trigger Celery task"""
-    from app import celery # Import inside function to avoid circular dependency
+    from app.celery import celery # Import inside function to avoid circular dependency
     
     user_email = get_jwt_identity()
     user_data = user_model.get_user_by_email(user_email)
@@ -148,10 +149,13 @@ def place_bid():
         flash("User not found", "danger")
         return redirect(url_for("dashboard_bp.dashboard"))
     
+    # Get data from JSON
+    data = request.get_json()
+    
     # Get form data
-    work_type = request.form.getlist("work_type") # Allow multiple selections
-    hours_to_submission = request.form.get("hours_to_submission")
-    bid_amount = request.form.get("bid_amount")
+    work_type = data.get("work_type", "").split(",") # Allow multiple selections
+    hours_to_submission = data.get("hours_to_submission")
+    bid_amount = data.get("bid_amount")
     # Debug: Print individual values
     print("Selected Work Type:", work_type)
     print("Hours Before Submission:", hours_to_submission)
