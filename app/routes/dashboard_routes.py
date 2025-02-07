@@ -9,6 +9,7 @@ import logging
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from datetime import datetime, timedelta
+from app.models import BiddingPreferenceModel
 import os
 
 dashboard_bp = Blueprint("dashboard_bp", __name__)
@@ -138,7 +139,7 @@ def pay():
 @jwt_required()
 def place_bid():
     """Handle automatic bid request and trigger Celery task"""
-    from app.tasks import automated_bidding # Import inside function to avoid circular dependency
+    from app import celery # Import inside function to avoid circular dependency
     
     user_email = get_jwt_identity()
     user_data = user_model.get_user_by_email(user_email)
@@ -148,7 +149,7 @@ def place_bid():
         return redirect(url_for("dashboard_bp.dashboard"))
     
     # Get form data
-    work_type = request.form.get("work_type")
+    work_type = request.form.getlist("work_type") # Allow multiple selections
     hours_to_submission = request.form.get("hours_to_submission")
     bid_amount = request.form.get("bid_amount")
     # Debug: Print individual values
@@ -161,14 +162,33 @@ def place_bid():
         return redirect(url_for("dashboard_bp.dashboard"))
     
     # Store the manual bid
-    bids_model.create_bid(user_data[0], work_type, hours_to_submission, bid_amount)
+    # bids_model.create_bid(user_data[0], work_type, hours_to_submission, bid_amount)
+    
+    # Store bidding preferences in DB
+    preferences_model = BiddingPreferenceModel(mysql)
+    preferences_model.set_user_preferences(user_data[0], ",".join(work_type), hours_to_submission, bid_amount)
     
     # Start the Celery task for automated bidding
-    automated_bidding.delay()
+    # automated_bidding.delay()
+    
+    # Trigger Celery task using `send_task`
+    celery.send_task("app.tasks.automated_bidding")
     
     flash("Bid placed successfully! Automated bidding will continue.", "success")
     return redirect(url_for("dashboard_bp.dashboard"))
   
+
+@dashboard_bp.route("/get-bidding-preferences", methods=["GET"])
+@jwt_required()
+def get_bidding_preferences():
+    """Fetch stored user preferences."""
+    user_id = get_jwt()["id"]
+
+    bidding_preferences = BiddingPreferenceModel(mysql)
+    preferences = bidding_preferences.get_user_preferences(user_id)
+
+    return jsonify(preferences), 200
+
 
 @dashboard_bp.errorhandler(ExpiredSignatureError)
 def handle_expired_token(error):
