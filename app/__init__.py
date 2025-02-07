@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import os
 from flask_cors import CORS
 from flask_mail import Mail
+from app.config import Config
 
 load_dotenv()
 
@@ -19,28 +20,7 @@ def create_app():
   app = Flask(__name__)
   
   # Load configurations
-  app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST')
-  app.config['MYSQL_USER'] = os.getenv('MYSQL_USER')
-  app.config['MYSQL_PORT'] = int(os.getenv('MYSQL_PORT', 3306))
-  app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD')
-  app.config['MYSQL_DB'] = os.getenv('MYSQL_DB')
-  app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-  app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
-  
-  # SMTP configurations
-  app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
-  app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT', 587))
-  app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS', 'true').lower() in ['true', '1', 'yes']
-  app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
-  app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
-  app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
-
-  # Store JWT in cookies instead of headers
-  app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
-  app.config["JWT_COOKIE_SECURE"] = False  # Set True in production
-  app.config["JWT_ACCESS_COOKIE_NAME"] = "access_token_cookie"
-  app.config["JWT_ACCESS_TOKEN_EXPIRES"] = 3600  # 1 hour expiration
-  app.config["JWT_COOKIE_CSRF_PROTECT"] = False  # Disable CSRF for now
+  app.config.from_object(Config)
 
   mysql.init_app(app)
   bcrypt.init_app(app)
