@@ -10,193 +10,130 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </head>
 <body>
-  {% with messages = get_flashed_messages(with_categories=True) %}
-      {% if messages %}
-          <div id="flash-messages">
-              {% for category, message in messages %}
-                  <div class="message {{ category }}">{{ message }}</div>
-              {% endfor %}
-          </div>
-      {% endif %}
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            <div id="flash-messages">
+                {% for category, message in messages %}
+                    <div class="message {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
     {% endwith %}
 
-  <div class="top-bar">
-    <h2>Welcome, {{ username }}</h2>
-    <p><a href="#" class="logout-btn" onclick="logoutUser()">Logout</a></p>
-  </div>
+    <div class="top-bar">
+        <h2>Welcome, {{ username }}</h2>
+        <p><a href="#" class="logout-btn" onclick="logoutUser()">Logout</a></p>
+    </div>
 
     {% if subscription_active %}
-      <p style="color: green;">Your subscription is active. Enjoy your services!</p>
+        <p style="color: green;">Your subscription is active. Automated bidding is enabled!</p>
     {% else %}
-      <p style="color: red; font-weight: bold;">Bot is inactive.
-        <a href="/dashboard/pay">Subscribe</a>
-      </p>
-      <p>The subscription fee is: <strong id="amount">KES {{ amount }}</strong></p>
-
-      <form action="/dashboard/pay" method="POST">
-        <button type="button" class="btn" onclick="paySubscription()">Pay Now Via M-Pesa</button>
-      </form>
+        <p style="color: red; font-weight: bold;">Bot is inactive. <a href="/dashboard/pay">Subscribe</a></p>
+        <p>The subscription fee is: <strong id="amount">KES {{ amount }}</strong></p>
     {% endif %}
 
-    <h3>Bidding Preferences</h3>
-    <form action="/dashboard/bid" method="POST">
-      <label for="work_type">Choose Work Type:</label>
-      <select name="work_type" id="work_type" required>
-        <option value="" disabled selected>Select work type...</option>
-        <option value="essay">Essay</option>
-        <option value="research">Research Paper</option>
-        <option value="dissertation">Dissertation</option>
-        <option value="assignment">Assignment</option>
-        <option value="article">Article</option>
-        <option value="report">Report</option>
-        <option value="law">law</option>
-        <option value="biology">Biology</option>
-        <option value="chemistry">Chemistry</option>
-        <option value="physics">Physics</option>
-      </select>
+    <h3>Set Bidding Preferences</h3>
+    <form id="biddingForm">
+        <label for="work_type">Choose Work Type:</label>
+        <select name="work_type" id="work_type" required>
+            <option value="" disabled selected>Select work type...</option>
+            <option value="essay">Essay</option>
+            <option value="research">Research Paper</option>
+            <option value="dissertation">Dissertation</option>
+            <option value="assignment">Assignment</option>
+            <option value="article">Article</option>
+            <option value="report">Report</option>
+            <option value="law">Law</option>
+            <option value="biology">Biology</option>
+            <option value="chemistry">Chemistry</option>
+            <option value="physics">Physics</option>
+        </select>
 
-      <!-- Display selected work types -->
-      <div class="selected-options" id="selectedOptions"></div>
-      <br>
-      
-      <label for="hours_to_submission">Set Hours To Submission:</label>
-      <input type="number" id="hours_to_submission" name="hours_to_submission" required min="1">
-      <label for="bid_amount">Set Bid Amount($):</label>
-      <input type="number" id="bid_amount" name="bid_amount" required min="1">
-      <br>
+        <!-- Display selected work types -->
+        <div class="selected-options" id="selectedOptions"></div>
+        <br>
+        
+        <label for="hours_to_submission">Set Hours To Submission:</label>
+        <input type="number" id="hours_to_submission" name="hours_to_submission" required min="1">
+
+        <label for="bid_amount">Set Bid Amount ($):</label>
+        <input type="number" id="bid_amount" name="bid_amount" required min="1">
+        <br>
     </form>
 
-    <button class="btn" type="submit">Place Bid</button>
+    <button class="btn" onclick="savePreferences()">Save Preferences</button>
 
     <h3>Bidding History</h3>
     <table class="styled-table">
-      <thead>
-        <tr>
-          <th>Work Type</th>
-          <th>Hours Before Submission</th>
-          <th>Bid Time</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for bid in bidding_history %}
-        <tr class="{% if bid.status == 'ACCEPTED' %}accepted{% elif bid.status == 'REJECTED' %}rejected{% else %}pending{% endif %}">
-          <td>{{ bid.work_type }}</td>
-          <td>{{ bid.hours_to_submission }} hours</td>
-          <td>{{ bid.bid_time }}</td>
-          <td class="status-cell">{{ bid.status }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
+        <thead>
+            <tr>
+                <th>Work Type</th>
+                <th>Hours Before Submission</th>
+                <th>Bid Time</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bid in bidding_history %}
+            <tr class="{% if bid.status == 'ACCEPTED' %}accepted{% elif bid.status == 'REJECTED' %}rejected{% else %}pending{% endif %}">
+                <td>{{ bid.work_type }}</td>
+                <td>{{ bid.hours_to_submission }} hours</td>
+                <td>{{ bid.bid_time }}</td>
+                <td class="status-cell">{{ bid.status }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
-
 
     <p id="message" style="color: red;"></p>
 
     <script>
-      const API_BASE_URL = "http://127.0.0.1:5000/dashboard";
-    
-      const token = "{{ session['access_token'] }}";  // Get token from session
-
-      // Function to fetch subscription price
-      async function fetchSubscriptionPrice() {
-        try {
-          const response = await fetch(`${API_BASE_URL}/get-subscription-price`, {
-            method: "GET",
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                "Content-Type": "application/json"
-            }
-          });
-
-          if (!response.ok) {
-            throw new Error("Failed to fetch subscription price");
-          }
-          const data = await response.json();
-          document.getElementById("amount").innerText = `KES ${data.amount}`;
-        } catch (error) {
-          document.getElementById("message").innerText = "Error fetching subscription price.";
-          console.error("Error fetching subscription price:", error);
-          
-        }
-      }
-
-      async function paySubscription() {
-        try {
-            const response = await fetch("/dashboard/pay", {
-                method: "POST",
-                credentials: "include",  // Send cookies automatically
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            });
-
-            const data = await response.text();
-            if (response.ok) {
-                alert("Payment request sent successfully. Please check your phone.");
-                location.reload();
-            } else {
-                document.getElementById("message").innerText = "Payment failed. " + data;
-            }
-        } catch (error) {
-            console.error("Error processing payment:", error);
-            document.getElementById("message").innerText = "Error processing payment.";
-        }
-      }
-
-      async function logoutUser() {
-        try {
-          const response = await fetch("/api/auth/logout", {
-            method: "POST",
-            credentials: "include"
-          });
-
-          if (response.ok) {
-            // alert("Logout successful!");
-            window.location.href="/api/auth/login";
-          } else {
-            alert("Logout failed. Please try again.")
-          }
-        } catch (error) {
-          console.error("Error during logout:", error);
-          alert("Error during logout");
-        }
-      }
-
-      // Automatically remove flash messages after 3 seconds
-      document.addEventListener("DOMContentLoaded", function () {
-        const flashMessages = document.getElementById("flash-messages");
-        
-        if (flashMessages) {
-            setTimeout(() => {
-                flashMessages.style.transition = "opacity 0.5s ease-out";
-                flashMessages.style.opacity = "0";
-                setTimeout(() => flashMessages.remove(), 500); // Remove after fade-out
-            }, 10000); // 10-seconds timer
-        }
-      });
-    
-      // Load subscription price when page loads
-      fetchSubscriptionPrice();
-
-      $(document).ready(function() {
+        const API_BASE_URL = "http://127.0.0.1:5000/dashboard";
         const selectedOptionsKey = "selectedOptions";
         const selectedOptions = JSON.parse(localStorage.getItem(selectedOptionsKey)) || [];
 
+        document.addEventListener("DOMContentLoaded", function () {
+            displaySelectedOptions();
+            loadPreferences();
+        });
+
         $("#work_type").on("change", addSelection);
+        $("#hours_to_submission").on("input", savePreferences);
+        $("#bid_amount").on("input", savePreferences);
 
         function addSelection() {
             const select = document.getElementById("work_type");
             const selectedValue = select.value;
-            const selectedText = select.options[select.selectedIndex].text;
 
             if (!selectedOptions.includes(selectedValue)) {
                 selectedOptions.push(selectedValue);
                 localStorage.setItem(selectedOptionsKey, JSON.stringify(selectedOptions));
                 displaySelectedOptions();
+                savePreferences();
             }
-            // Reset the select element to the placeholder state
+
             select.selectedIndex = 0;
+        }
+
+        function displaySelectedOptions() {
+            const container = document.getElementById("selectedOptions");
+            container.innerHTML = "";
+
+            selectedOptions.forEach(value => {
+                const optionDiv = document.createElement("div");
+                optionDiv.className = "option";
+
+                const span = document.createElement("span");
+                span.textContent = value;
+
+                const button = document.createElement("button");
+                button.textContent = "x";
+                button.onclick = () => removeSelection(value);
+
+                optionDiv.appendChild(span);
+                optionDiv.appendChild(button);
+                container.appendChild(optionDiv);
+            });
         }
 
         function removeSelection(value) {
@@ -205,34 +142,63 @@
                 selectedOptions.splice(index, 1);
                 localStorage.setItem(selectedOptionsKey, JSON.stringify(selectedOptions));
                 displaySelectedOptions();
+                savePreferences();
             }
         }
 
-        function displaySelectedOptions() {
-          const container = document.getElementById("selectedOptions");
-          container.innerHTML = "";
+        async function savePreferences() {
+            const token = "{{ session['access_token'] }}";
 
-          selectedOptions.forEach(value => {
-              const optionDiv = document.createElement("div");
-              optionDiv.className = "option";
+            const data = {
+                work_types: selectedOptions.join(","),  // Store as CSV
+                hours_to_submission: document.getElementById("hours_to_submission").value,
+                bid_amount: document.getElementById("bid_amount").value
+            };
 
-              const span = document.createElement("span");
-              span.textContent = value;
+            try {
+                const response = await fetch("/dashboard/bid", {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
 
-              const button = document.createElement("button");
-              button.textContent = "x";
-              button.onclick = () => removeSelection(value);
-
-              optionDiv.appendChild(span);
-              optionDiv.appendChild(button);
-
-              container.appendChild(optionDiv);
-          });
+                if (response.ok) {
+                    alert("Preferences saved! Automated bidding will use these settings.");
+                } else {
+                    console.error("Failed to save preferences.");
+                }
+            } catch (error) {
+                console.error("Error saving preferences:", error);
+            }
         }
 
-        // Display selected options on page load
-        displaySelectedOptions();
-      });
+        async function loadPreferences() {
+            const token = "{{ session['access_token'] }}";
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/get-bidding-preferences`, {
+                    method: "GET",
+                    credentials: "include",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById("hours_to_submission").value = data.hours_to_submission || "";
+                    document.getElementById("bid_amount").value = data.bid_amount || "";
+                    localStorage.setItem(selectedOptionsKey, JSON.stringify(data.work_types.split(",")));
+                    displaySelectedOptions();
+                }
+            } catch (error) {
+                console.error("Error loading preferences:", error);
+            }
+        }
     </script>
 </body>
 </html>
