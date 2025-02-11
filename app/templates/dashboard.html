@@ -98,8 +98,8 @@
         });
 
         $("#work_type").on("change", addSelection);
-        $("#hours_to_submission").on("input", savePreferences);
-        $("#bid_amount").on("input", savePreferences);
+        // $("#hours_to_submission").on("input", savePreferences);
+        // $("#bid_amount").on("input", savePreferences);
 
         function addSelection() {
             const select = document.getElementById("work_type");
@@ -192,10 +192,11 @@
                     const data = await response.json();
                     document.getElementById("hours_to_submission").value = data.hours_to_submission || "";
                     document.getElementById("bid_amount").value = data.bid_amount || "";
+
                     const workTypes = Array.isArray(data.work_types) 
                       ? data.work_types 
                       : (typeof data.work_types === "string" ? data.work_types.split(",") : []);
-                    localStorage.setItem(selectedOptionsKey, JSON.stringify(work_types));
+                    localStorage.setItem(selectedOptionsKey, JSON.stringify(workTypes));
                     displaySelectedOptions();
                 }
             } catch (error) {
