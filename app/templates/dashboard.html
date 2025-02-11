@@ -92,7 +92,7 @@
 
     <script>
         const API_BASE_URL = "http://127.0.0.1:5000/dashboard";
-        const token = "{{ session['access_token'] }}";  // Get token from session
+        const token = "{{ session['access_token'] }}";  // Get token from session 
         const selectedOptionsKey = "selectedOptions";
         const selectedOptions = JSON.parse(localStorage.getItem(selectedOptionsKey)) || [];
 
@@ -135,6 +135,7 @@
                   location.reload();
               } else {
                   document.getElementById("message").innerText = "Payment failed. " + data;
+                  console.error("Payment error:", data);
               }
           } catch (error) {
               console.error("Error processing payment:", error);
@@ -276,11 +277,9 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log("Loaded preferences:", data);
                     
                     document.getElementById("hours_to_submission").value = data.hours_to_submission || "";
 
-                    console.log("Bid amount before setting:", bid_amount);
                     document.getElementById("bid_amount").value = data.bid_amount || "";
                     
                     if (data.bid_amount !== undefined && data.bid_amount !== null) {
