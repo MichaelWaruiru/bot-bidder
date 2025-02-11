@@ -156,24 +156,15 @@ def place_bid():
     work_type = data.get("work_types", "").split(",") # Allow multiple selections
     hours_to_submission = data.get("hours_to_submission")
     bid_amount = data.get("bid_amount")
-    # Debug: Print individual values
-    print("Selected Work Type:", work_type)
-    print("Hours Before Submission:", hours_to_submission)
-    print("Bid Amount:", bid_amount)
     
     if not work_type or not hours_to_submission or not bid_amount:
         flash("Please fill in all fields before placing a bid.", "danger")
         return redirect(url_for("dashboard_bp.dashboard"))
     
-    # Store the manual bid
-    # bids_model.create_bid(user_data[0], work_type, hours_to_submission, bid_amount)
-    
     # Store bidding preferences in DB
     preferences_model = BiddingPreferenceModel(mysql)
     preferences_model.set_user_preferences(user_data[0], ",".join(work_type), hours_to_submission, bid_amount)
     
-    # Start the Celery task for automated bidding
-    # automated_bidding.delay()
     
     # Trigger Celery task using `send_task`
     celery.send_task("app.tasks.automated_bidding")

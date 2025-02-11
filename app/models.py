@@ -155,13 +155,17 @@ class BiddingPreferenceModel:
   def get_user_preferences(self, user_id):
     # Retrieves user bidding preferences
     cursor = self.mysql.connection.cursor()
-    cursor.execute("SELECT work_types, hours_to_submission FROM bidding_preferences WHERE user_id = %s", (user_id,))
+    cursor.execute("SELECT work_types, hours_to_submission, bid_amount FROM bidding_preferences WHERE user_id = %s", (user_id,))
     row = cursor.fetchone()
     cursor.close()
     
     if row:
-        return {"work_types": row[0].split(",") if row[0] else [], "hours_to_submission": row[1] if row[1] else 0}
-    return {"work_types": [], "hours_to_submission": 0}
+        return {
+                  "work_types": row[0].split(",") if row[0] else [],
+                  "hours_to_submission": row[1] if row[1] else 0,
+                  "bid_amount": row[2] if row[2] else 0
+                }
+    return {"work_types": [], "hours_to_submission": 0, "bid_amount": 0}
 
 
 class BidsModel:

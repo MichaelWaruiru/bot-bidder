@@ -28,8 +28,11 @@
     {% if subscription_active %}
         <p style="color: green;">Your subscription is active. Automated bidding is enabled!</p>
     {% else %}
-        <p style="color: red; font-weight: bold;">Bot is inactive. <a href="/dashboard/pay">Subscribe</a></p>
+        <p style="color: red; font-weight: bold;">Bot is inactive. <a href="/dashboard/pay" onclick="paySubscription()">Subscribe</a></p>
         <p>The subscription fee is: <strong id="amount">KES {{ amount }}</strong></p>
+        <form action="/dashboard/pay" method="POST">
+          <button type="button" class="btn" onclick="paySubscription()">Pay Now Via M-Pesa</button>
+      </form>
     {% endif %}
 
     <h3>Set Bidding Preferences</h3>
@@ -89,8 +92,91 @@
 
     <script>
         const API_BASE_URL = "http://127.0.0.1:5000/dashboard";
+        const token = "{{ session['access_token'] }}";  // Get token from session
         const selectedOptionsKey = "selectedOptions";
         const selectedOptions = JSON.parse(localStorage.getItem(selectedOptionsKey)) || [];
+
+        // Function to fetch subscription price
+        async function fetchSubscriptionPrice() {
+          try {
+            const response = await fetch(`${API_BASE_URL}/get-subscription-price`, {
+              method: "GET",
+              headers: {
+                  'Authorization': `Bearer ${token}`,
+                  "Content-Type": "application/json"
+              }
+            });
+
+            if (!response.ok) {
+              throw new Error("Failed to fetch subscription price");
+            }
+            const data = await response.json();
+            document.getElementById("amount").innerText = `KES ${data.amount}`;
+          } catch (error) {
+            document.getElementById("message").innerText = "Error fetching subscription price.";
+            console.error("Error fetching subscription price:", error);
+            
+          }
+        }
+
+        async function paySubscription() {
+          try {
+              const response = await fetch("/dashboard/pay", {
+                  method: "POST",
+                  credentials: "include",  // Send cookies automatically
+                  headers: {
+                      "Content-Type": "application/json"
+                  }
+              });
+
+              const data = await response.text();
+              if (response.ok) {
+                  alert("Payment request sent successfully. Please check your phone.");
+                  location.reload();
+              } else {
+                  document.getElementById("message").innerText = "Payment failed. " + data;
+              }
+          } catch (error) {
+              console.error("Error processing payment:", error);
+              document.getElementById("message").innerText = "Error processing payment.";
+          }
+        }
+
+        async function logoutUser() {
+          try {
+            const response = await fetch("/api/auth/logout", {
+              method: "POST",
+              credentials: "include"
+            });
+
+            if (response.ok) {
+              // alert("Logout successful!");
+              window.location.href="/api/auth/login";
+            } else {
+              alert("Logout failed. Please try again.")
+            }
+          } catch (error) {
+            console.error("Error during logout:", error);
+            alert("Error during logout");
+          }
+        }
+
+        // Automatically remove flash messages after 3 seconds
+        document.addEventListener("DOMContentLoaded", function () {
+          const flashMessages = document.getElementById("flash-messages");
+          
+          if (flashMessages) {
+              setTimeout(() => {
+                  flashMessages.style.transition = "opacity 0.5s ease-out";
+                  flashMessages.style.opacity = "0";
+                  setTimeout(() => flashMessages.remove(), 500); // Remove after fade-out
+              }, 10000); // 10-seconds timer
+          }
+        });
+      
+        // Load subscription price when page loads
+        fetchSubscriptionPrice();
+
 
         document.addEventListener("DOMContentLoaded", function () {
             displaySelectedOptions();
@@ -190,8 +276,18 @@
 
                 if (response.ok) {
                     const data = await response.json();
+                    console.log("Loaded preferences:", data);
+                    
                     document.getElementById("hours_to_submission").value = data.hours_to_submission || "";
+
+                    console.log("Bid amount before setting:", bid_amount);
                     document.getElementById("bid_amount").value = data.bid_amount || "";
+                    
+                    if (data.bid_amount !== undefined && data.bid_amount !== null) {
+                        document.getElementById("bid_amount").value = data.bid_amount;
+                    } else {
+                        document.getElementById("bid_amount").value = "0";  // Default to empty if missing
+                    }
 
                     const workTypes = Array.isArray(data.work_types) 
                       ? data.work_types 
