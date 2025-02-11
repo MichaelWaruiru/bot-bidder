@@ -153,7 +153,7 @@ def place_bid():
     data = request.get_json()
     
     # Get form data
-    work_type = data.get("work_type", "").split(",") # Allow multiple selections
+    work_type = data.get("work_types", "").split(",") # Allow multiple selections
     hours_to_submission = data.get("hours_to_submission")
     bid_amount = data.get("bid_amount")
     # Debug: Print individual values

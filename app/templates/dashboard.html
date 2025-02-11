@@ -109,7 +109,7 @@
                 selectedOptions.push(selectedValue);
                 localStorage.setItem(selectedOptionsKey, JSON.stringify(selectedOptions));
                 displaySelectedOptions();
-                savePreferences();
+                // savePreferences();
             }
 
             select.selectedIndex = 0;
@@ -142,7 +142,7 @@
                 selectedOptions.splice(index, 1);
                 localStorage.setItem(selectedOptionsKey, JSON.stringify(selectedOptions));
                 displaySelectedOptions();
-                savePreferences();
+                // savePreferences();
             }
         }
 
