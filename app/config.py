@@ -32,5 +32,8 @@ class Config:
     MAIL_DEFAULT_SENDER = os.getenv("MAIL_DEFAULT_SENDER")
     
     # Celery Configuration (MySQL as Broker & Backend)
-    CELERY_BROKER_URL = f"sqla+mysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}"
+    # CELERY_BROKER_URL = f"sqla+mysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}"
+    CELERY_BROKER_URL = "redis://localhost:6379/0"  # Use Redis for the broker
+    
+    # Use MySQL as backend
     CELERY_RESULT_BACKEND = f"db+mysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}"
