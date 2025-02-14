@@ -21,4 +21,5 @@ Celery Task Queue: Handles automatic job bidding in the background.
 # Installation & Setup
 ## 1. Clone the repository 
 git clone https://github.com/MichaelWaruiru/bot-bidder.git
+
 cd bot-bidder
