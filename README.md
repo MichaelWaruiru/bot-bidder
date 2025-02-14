@@ -2,7 +2,7 @@
 ## Overview
 Bot bidder is an automated bidding system that allow users to select work types and set bidding preferences. The system then places bids automatically on platforms like Edusson and Writers Bay based on the user's selections. The bot is triggered automatically when the user sets their preferences and has an active subscription.
 
-# Features
+## Features
 
 Automated Bidding: Bids on jobs based on user preferences.
 
@@ -18,7 +18,7 @@ Database Integration: MySQL-based backend for user data and bid tracking.
 
 Celery Task Queue: Handles automatic job bidding in the background.
 
-## Installation & Setup
-# 1. Clone the repository 
+# Installation & Setup
+## 1. Clone the repository 
 git clone https://github.com/MichaelWaruiru/bot-bidder.git
 cd bot-bidder
