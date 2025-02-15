@@ -38,10 +38,12 @@ CELERY_RESULT_BACKEND=db+mysql://your_user:your_password@localhost/your_database
 
 ## 4. Run the application
 Start the Flask app:
+
 python run.py
 
 Start the Celery worker:
-python celery_worker.py
+
+celery -A app.tasks worker --loglevel=info
 
 # Usage
 1. Sign up and log in to your account.
