@@ -33,13 +33,20 @@ MYSQL_HOST=localhost
 MYSQL_USER=your_user
 MYSQL_PASSWORD=your_password
 MYSQL_DB=your_database
-CELERY_BROKER_URL=sqla+mysql://your_user:your_password@localhost/your_database
+CELERY_BROKER_URL= "redis://localhost:6379/0"
 CELERY_RESULT_BACKEND=db+mysql://your_user:your_password@localhost/your_database
 
 ## 4. Run the application
 Start the Flask app:
 
 python run.py
+
+Run redis:
+
+memurai.exe(if downloaded from Redis server)
+net start memurai(if it's the Windows service)
+Verify if Redis is running:
+redis-cli ping(if it's running it should return PONG)
 
 Start the Celery worker:
 
