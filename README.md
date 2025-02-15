@@ -3,7 +3,6 @@
 Bot bidder is an automated bidding system that allow users to select work types and set bidding preferences. The system then places bids automatically on platforms like Edusson and Writers Bay based on the user's selections. The bot is triggered automatically when the user sets their preferences and has an active subscription.
 
 ## Features
-
 Automated Bidding: Bids on jobs based on user preferences.
 
 User Authentication: Secure login with JWT authentication.
@@ -28,7 +27,6 @@ cd bot-bidder
 pip install -r requirements.txt
 
 ## 3. Configure Environment Variables
-
 Create a .env file and add:
 SECRET_KEY=your_secret_key
 MYSQL_HOST=localhost
@@ -46,7 +44,6 @@ Start the Celery worker:
 python celery_worker.py
 
 # Usage
-
 1. Sign up and log in to your account.
 
 2. Subscribe to activate bidding.
@@ -65,9 +62,7 @@ python celery_worker.py
 (iii) <strong>Errors in Selenium?</strong> Install the correct ChromeDriver version.
 
 # Contributions
-
 Feel free to contribute by submitting pull requests or reporting issues.
 
 # License
-
 This project is licensed under the MIT License.
