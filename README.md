@@ -37,18 +37,21 @@ CELERY_BROKER_URL= "redis://localhost:6379/0"
 CELERY_RESULT_BACKEND=db+mysql://your_user:your_password@localhost/your_database
 
 ## 4. Run the application
-Start the Flask app:
+<strong>Start the Flask app:</strong>
 
 python run.py
 
-Run redis:
+<strong>Run redis:</strong>
 
 memurai.exe(if downloaded from Redis server)
+
 net start memurai(if it's the Windows service)
-Verify if Redis is running:
+
+<strong>Verify if Redis is running:</strong>
+
 redis-cli ping(if it's running it should return PONG)
 
-Start the Celery worker:
+<strong>Start the Celery worker:</strong>
 
 celery -A app.tasks worker --loglevel=info
 
