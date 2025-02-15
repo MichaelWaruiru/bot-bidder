@@ -23,3 +23,51 @@ Celery Task Queue: Handles automatic job bidding in the background.
 git clone https://github.com/MichaelWaruiru/bot-bidder.git
 
 cd bot-bidder
+
+## 2. Install dependencies 
+pip install -r requirements.txt
+
+## 3. Configure Environment Variables
+
+Create a .env file and add:
+SECRET_KEY=your_secret_key
+MYSQL_HOST=localhost
+MYSQL_USER=your_user
+MYSQL_PASSWORD=your_password
+MYSQL_DB=your_database
+CELERY_BROKER_URL=sqla+mysql://your_user:your_password@localhost/your_database
+CELERY_RESULT_BACKEND=db+mysql://your_user:your_password@localhost/your_database
+
+## 4. Run the application
+Start the Flask app:
+python run.py
+
+Start the Celery worker:
+python celery_worker.py
+
+# Usage
+
+1. Sign up and log in to your account.
+
+2. Subscribe to activate bidding.
+
+3. Set your work type preferences on the dashboard.
+
+4. The bot automatically bids based on your selections.
+
+5. Monitor your bidding history on the dashboard.
+
+# Troubleshooting
+(i) <strong>Celery not starting?</strong> Ensure your broker(in this case I'm using redis) is running.
+ 
+(ii) <strong>Job not bidding?</strong>Check if your subscription is active.
+
+(iii) <strong>Errors in Selenium?</strong> Install the correct ChromeDriver version.
+
+# Contributions
+
+Feel free to contribute by submitting pull requests or reporting issues.
+
+# License
+
+This project is licensed under the MIT License.
