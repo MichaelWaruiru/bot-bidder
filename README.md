@@ -29,6 +29,13 @@ pip install -r requirements.txt
 ## 3. Configure Environment Variables
 Create a .env file and add:
 SECRET_KEY=your_secret_key
+
+#JWT configurations
+JWT_SECRET_KEY=
+
+#Email configurations
+
+#Database configurations 
 MYSQL_HOST=localhost
 MYSQL_USER=your_user
 MYSQL_PASSWORD=your_password
