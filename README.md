@@ -30,8 +30,7 @@ pip install -r requirements.txt
 Create a .env file and add:
 SECRET_KEY=your_secret_key
 
-#JWT configurations
-
+#JWT configurations 
 JWT_SECRET_KEY=
 
 #Email configurations
