@@ -82,7 +82,7 @@ celery -A app.tasks worker --loglevel=info
 (iii) <strong>Errors in Selenium?</strong> Install the correct ChromeDriver version.
 
 # Contributions
-No contributions. Thank you!
+No contributions! Thank you!
 
 # License
 This project is licensed under the MIT License.
