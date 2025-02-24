@@ -8,8 +8,12 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script defer src="{{ url_for('static', filename='js/theme-toggle.js') }}"></script>
 </head>
-<body>
+<body class="dark-mode">
+    <!-- Toggle dark/light mode -->
+    <button id="theme-toggle">🌙</button>
+
     {% with messages = get_flashed_messages(with_categories=True) %}
         {% if messages %}
             <div id="flash-messages">

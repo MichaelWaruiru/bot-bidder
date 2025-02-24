@@ -1,8 +1,31 @@
+/* General styles */
 body {
   font-family: Arial, Helvetica, sans-serif;
   padding: 20px;
   max-width: 600px;
   margin: auto;
+}
+
+/* Dark/Light Mode */
+body.dark-mode {
+  background-color: black;
+  color: white;
+}
+
+body.light-mode {
+  background-color: white;
+  color: black;
+}
+
+#theme-toggle {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: white;
 }
 
 .btn {
@@ -57,7 +80,7 @@ input,
 }
 
 .selected-options .option {
-  background-color: #e0e0e0;
+  /* background-color: #e0e0e0; */
   border: 1px solid #ccc;
   border-radius: 5px;
   padding: 5px 10px;

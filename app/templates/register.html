@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/login.css') }}">
+    <script defer src="{{ url_for('static', filename='js/theme-toggle.js') }}"></script>
     <title>Register</title>
 </head>
-<body>
+<body class="dark-mode">
+    <!-- Toggle Dark/Light Mode -->
+    <button id="theme-toggle">🌙</button>
+
     <!-- Animated Background -->
     <div class="container">
         <div class="sun"></div>

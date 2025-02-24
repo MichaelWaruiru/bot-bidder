@@ -11,6 +11,28 @@ body {
   position: relative;
 }
 
+/* Dark/Light Mode */
+body.dark-mode {
+  background-color: black;
+  color: white;
+}
+
+body.light-mode {
+  background-color: white;
+  color: black;
+}
+
+#theme-toggle {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: white;
+}
+
 /* Animated Background */
 .container {
   font-size: 10px;

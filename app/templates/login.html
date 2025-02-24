@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/login.css') }}">
+    <script defer src="{{ url_for('static', filename='js/theme-toggle.js') }}"></script>
     <title>Login</title>
 </head>
-<body>
+<body class="dark-mode">
+    <!-- Toggle dark/light mode -->
+    <button id="theme-toggle">🌙</button>
+
     <!-- Animated Background -->
     <div class="container">
         <div class="sun"></div>
@@ -35,6 +39,12 @@
 
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" placeholder="Password" required>
+
+            <!-- Remember me checkbox -->
+             <div class="remember-me">
+                <input type="checkbox" id="remember_me" name="remember_me">
+                <label for="remember_me">Remember Me</label>
+             </div>
 
             <button type="submit">Login</button>
         </form>
