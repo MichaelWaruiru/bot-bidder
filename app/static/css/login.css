@@ -1,26 +1,121 @@
+/* General Styles */
 body {
   font-family: Arial, sans-serif;
-  padding: 20px;
-  max-width: 500px;
-  margin: auto;
+  margin: 0;
+  height: 100vh;
   display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  background-color: black;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Animated Background */
+.container {
+  font-size: 10px;
+  width: 40em;
+  height: 40em;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.sun {
+  position: absolute;
+  top: 15em;
+  left: 15em;
+  width: 10em;
+  height: 10em;
+  background-color: yellow;
+  border-radius: 50%;
+  box-shadow: 0 0 3em white;
+}
+
+.earth,
+.moon {
+  position: absolute;
+  border-style: solid;
+  border-color: white transparent;
+  border-width: 0.1em 0.1em 0 0;
+  border-radius: 50%;
+}
+
+.earth {
+  top: 5em;
+  left: 5em;
+  width: 30em;
+  height: 30em;
+  animation: orbit 36.5s linear infinite;
+}
+
+.moon {
+  top: 0;
+  right: 0;
+  width: 8em;
+  height: 8em;
+  animation: orbit 2.7s linear infinite;
+}
+
+.earth::before,
+.moon::before {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+}
+
+.earth::before {
+  top: 2.8em;
+  right: 2.8em;
+  width: 3em;
+  height: 3em;
+  background-color: aqua;
+}
+
+.moon::before {
+  top: 0.8em;
+  right: 0.2em;
+  left: 6.5em;
+  width: 1.2em;
+  height: 1.2em;
+  background-color: silver;
+}
+
+@keyframes orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Login & Register Form Styling */
+.form-container {
+  position: absolute;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  border-radius: 10px;
+  width: 350px;
+  color: white;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(255, 255, 255, 0.3);
 }
 
 input,
 button {
-  width: 100%;
-  padding: 18px;
-  margin: 15px 5px;
+  width: 90%;
+  padding: 15px;
+  margin: 10px 5px;
   border-radius: 10px;
   border: none;
   font-size: 14px;
-  box-shadow: 0 4px 8px hsla(0, 0%, 0%, 0.2);
+  box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
 }
 
 button {
   background-color: hsl(180, 100%, 50%);
+  color: white;
+  font-weight: bold;
 }
 
 .message {
@@ -45,9 +140,17 @@ button {
 }
 
 @keyframes fadeOut {
-  0% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { opacity: 0; }
+  0% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
 }
 
 #flash-messages {

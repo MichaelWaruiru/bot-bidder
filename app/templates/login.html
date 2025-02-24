@@ -7,32 +7,41 @@
     <title>Login</title>
 </head>
 <body>
-    <h2>Login</h2>
+    <!-- Animated Background -->
+    <div class="container">
+        <div class="sun"></div>
+        <div class="earth">
+            <div class="moon"></div>
+        </div>
+    </div>
 
-    {% with messages = get_flashed_messages(with_categories=True) %}
-        {% if messages %}
-            <div id="flash-messages">
-                {% for category, message in messages %}
-                    <div class="message {{ category }}">{{ message }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
-    
-    <form action="/api/auth/login" method="POST">
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" placeholder="Email" required>
-        <br>
+    <!-- Login Form -->
+    <div class="form-container">
+        <h2>Login</h2>
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" placeholder="Password" required>
-        <br>
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                <div id="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
 
-        <button type="submit">Login</button>
-    </form>
+        <form action="/api/auth/login" method="POST">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Email" required>
 
-    <div class="link">
-        <p>Don't have an account? <a href="/api/auth/register">Register here</a></p>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" placeholder="Password" required>
+
+            <button type="submit">Login</button>
+        </form>
+
+        <div class="link">
+            <p>Don't have an account? <a href="/api/auth/register">Register here</a></p>
+        </div>
     </div>
 </body>
 </html>
