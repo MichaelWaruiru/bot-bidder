@@ -45,6 +45,7 @@ body.light-mode {
   padding: 10px;
   border-radius: 5px;
   margin-bottom: 10px;
+  width: 90%;
 }
 
 .success {
@@ -98,6 +99,11 @@ input,
   border: none;
   color: red;
   cursor: pointer;
+}
+
+#hours_to_submission,
+#bid_amount {
+  width: 10%;
 }
 
 .top-bar {
