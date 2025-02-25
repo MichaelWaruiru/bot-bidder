@@ -36,11 +36,14 @@ JWT_SECRET_KEY=
 
 #Email configurations
 
-#Database configurations 
+#Database configurations
+
 MYSQL_HOST=localhost
 MYSQL_USER=your_user
 MYSQL_PASSWORD=your_password
 MYSQL_DB=your_database
+
+
 CELERY_BROKER_URL= "redis://localhost:6379/0"
 CELERY_RESULT_BACKEND=db+mysql://your_user:your_password@localhost/your_database
 
