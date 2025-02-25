@@ -9,9 +9,9 @@ Bot bidder is an automated bidding system that allow users to select work types 
 
 <strong>Subscription Management</strong>: Users must have an active subscription to enable bidding.
 
-Dynamic Bid Amount: Users can set custom bid amounts.
+<strong>Dynamic Bid Amount</strong>: Users can set custom bid amounts.
 
-Job Scraping: Uses Selenium to fetch available jobs.
+<strong>Job Scraping</strong>: Uses Selenium to fetch available jobs.
 
 Database Integration: MySQL-based backend for user data and bid tracking.
 
