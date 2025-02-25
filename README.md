@@ -3,7 +3,7 @@
 Bot bidder is an automated bidding system that allow users to select work types and set bidding preferences. The system then places bids automatically on platforms like Edusson and Writers Bay based on the user's selections. The bot is triggered automatically when the user sets their preferences and has an active subscription.
 
 ## Features
-Automated Bidding: Bids on jobs based on user preferences.
+<strong>Automated Bidding</strong>: Bids on jobs based on user preferences.
 
 User Authentication: Secure login with JWT authentication.
 
