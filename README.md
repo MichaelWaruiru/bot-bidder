@@ -5,7 +5,7 @@ Bot bidder is an automated bidding system that allow users to select work types 
 ## Features
 <strong>Automated Bidding</strong>: Bids on jobs based on user preferences.
 
-User Authentication: Secure login with JWT authentication.
+<strong>User Authentication</strong>: Secure login with JWT authentication.
 
 Subscription Management: Users must have an active subscription to enable bidding.
 
