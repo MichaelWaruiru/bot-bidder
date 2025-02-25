@@ -7,7 +7,7 @@ Bot bidder is an automated bidding system that allow users to select work types 
 
 <strong>User Authentication</strong>: Secure login with JWT authentication.
 
-Subscription Management: Users must have an active subscription to enable bidding.
+<strong>Subscription Management</strong>: Users must have an active subscription to enable bidding.
 
 Dynamic Bid Amount: Users can set custom bid amounts.
 
