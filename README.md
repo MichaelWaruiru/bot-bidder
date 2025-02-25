@@ -13,9 +13,9 @@ Bot bidder is an automated bidding system that allow users to select work types 
 
 <strong>Job Scraping</strong>: Uses Selenium to fetch available jobs.
 
-Database Integration: MySQL-based backend for user data and bid tracking.
+<strong>Database Integration</strong>: MySQL-based backend for user data and bid tracking.
 
-Celery Task Queue: Handles automatic job bidding in the background.
+<strong>Celery Task Queue</strong>: Handles automatic job bidding in the background.
 
 # Installation & Setup
 ## 1. Clone the repository 
