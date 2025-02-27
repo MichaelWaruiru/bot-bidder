@@ -44,8 +44,7 @@ MYSQL_PASSWORD=your_password
 MYSQL_DB=your_database
 
 
-CELERY_BROKER_URL= "redis://localhost:6379/0"
-CELERY_RESULT_BACKEND=db+mysql://your_user:your_password@localhost/your_database
+CELERY_BROKER_
 
 ## 4. Run the application
 <strong>Start the Flask app:</strong>
