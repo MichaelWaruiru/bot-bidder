@@ -44,7 +44,7 @@ MYSQL_PASSWORD=your_password
 MYSQL_DB=your_database
 
 
-CELERY_BROKER_
+CELERY_BRO
 
 ## 4. Run the application
 <strong>Start the Flask app:</strong>
