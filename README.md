@@ -32,7 +32,8 @@ SECRET_KEY=your_secret_key
 
 #JWT configurations
 
-JWT_SECRET_KEY=
+JWT_SECRET_KEY=your_jwt_secret_key
+
 
 #Email configurations
 
