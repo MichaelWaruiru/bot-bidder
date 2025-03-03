@@ -33,7 +33,28 @@ SECRET_KEY=your_secret_key
 #JWT configurations
 
 JWT_SECRET_KEY=your_jwt_secret_key
-
+   # JWT Configuration (Cookies)
+    JWT_TOKEN_LOCATION = ["cookies"]
+    JWT_COOKIE_SECURE = False  # Set True in production
+    JWT_ACCESS_COOKIE_NAME = "access_token_cookie"
+    JWT_ACCESS_TOKEN_EXPIRES = 3600  # 1 hour expiration
+    JWT_COOKIE_CSRF_PROTECT = False  # Disable CSRF for now
+    
+    # MySQL Configuration
+    MYSQL_HOST = os.getenv("MYSQL_HOST", "localhost")
+    MYSQL_USER = os.getenv("MYSQL_USER", "root")
+    MYSQL_PORT = int(os.getenv("MYSQL_PORT", 3306))
+    MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "password")
+    MYSQL_DB = os.getenv("MYSQL_DB", "mydatabase")
+    
+    # SMTP (Mail) Configuration
+    MAIL_SERVER = os.getenv("MAIL_SERVER", "smtp.gmail.com")
+    MAIL_PORT = int(os.getenv("MAIL_PORT", 587))
+    MAIL_USE_TLS = os.getenv("MAIL_USE_TLS", "true").lower() in ["true", "1", "yes"]
+    MAIL_USERNAME = os.getenv("MAIL_USERNAME")
+    MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
+    MAIL_DEFAULT_SENDER = os.getenv("MAIL_DEFAULT_SENDER")
+    
 
 #Email configurations
 
@@ -42,6 +63,7 @@ JWT_SECRET_KEY=your_jwt_secret_key
 MYSQL_HOST=localhost
 MYSQL_USER=your_user
 MYSQL_PASSWORD=your_password
+MYSQL_PORT=your_port
 MYSQL_DB=your_database
 
 ## 4. Run the application
