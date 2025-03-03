@@ -28,12 +28,10 @@ pip install -r requirements.txt
 
 ## 3. Configure Environment Variables
 Create a .env file and add:
-SECRET_KEY=your_secret_key
 
-#JWT configurations
 
-JWT_SECRET_KEY=your_jwt_secret_key
-   # JWT Configuration (Cookies)
+    SECRET_KEY=your_secret_key
+    JWT_SECRET_KEY=your_jwt_secret_key
     JWT_TOKEN_LOCATION = ["cookies"]
     JWT_COOKIE_SECURE = False  # Set True in production
     JWT_ACCESS_COOKIE_NAME = "access_token_cookie"
@@ -56,34 +54,24 @@ JWT_SECRET_KEY=your_jwt_secret_key
     MAIL_DEFAULT_SENDER = os.getenv("MAIL_DEFAULT_SENDER")
     
 
-#Email configurations
-
-#Database configurations
-
-MYSQL_HOST=localhost
-MYSQL_USER=your_user
-MYSQL_PASSWORD=your_password
-MYSQL_PORT=your_port
-MYSQL_DB=your_database
-
 ## 4. Run the application
 <strong>Start the Flask app:</strong>
 
-python run.py
+    python run.py
 
 <strong>Run redis:</strong>
 
-memurai.exe(if downloaded from Redis server)
+    memurai.exe(if downloaded from Redis server)
 
-net start memurai(if it's the Windows service)
+    net start memurai(if it's the Windows service)
 
 <strong>Verify if Redis is running:</strong>
 
-redis-cli ping(if it's running it should return PONG)
+    redis-cli ping(if it's running it should return PONG)
 
 <strong>Start the Celery worker:</strong>
 
-celery -A app.tasks worker --loglevel=info
+    celery -A app.tasks worker --loglevel=info
 
 # Usage
 1. Sign up and log in to your account.
