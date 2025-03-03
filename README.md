@@ -19,9 +19,9 @@ Bot bidder is an automated bidding system that allow users to select work types 
 
 # Installation & Setup
 ## 1. Clone the repository 
-git clone https://github.com/MichaelWaruiru/bot-bidder.git
+    git clone https://github.com/MichaelWaruiru/bot-bidder.git
 
-cd bot-bidder
+    cd bot-bidder
 
 ## 2. Install dependencies 
 pip install -r requirements.txt
