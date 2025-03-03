@@ -85,7 +85,7 @@ Create a .env file and add:
 5. Monitor your bidding history on the dashboard.
 
 # Troubleshooting
-(i) <strong>Celery not starting?</strong> Ensure your broker(in this case I'm using redis) is running.
+(i) <strong>Celery not starting?</strong> Ensure your broker(in this case, I'm using redis) is running.
  
 (ii) <strong>Job not bidding?</strong>Check if your subscription is active.
 
