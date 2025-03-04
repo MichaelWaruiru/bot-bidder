@@ -28,6 +28,7 @@ Bot bidder is an automated bidding system that allow users to select work types 
 
 ## 3. Configure Environment Variables
 Create a .env file and add:
+
     SECRET_KEY=your_secret_key
     JWT_SECRET_KEY=your_jwt_secret_key
     
