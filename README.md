@@ -28,30 +28,31 @@ Bot bidder is an automated bidding system that allow users to select work types 
 
 ## 3. Configure Environment Variables
 Create a .env file and add:
-
-
     SECRET_KEY=your_secret_key
     JWT_SECRET_KEY=your_jwt_secret_key
-    JWT_TOKEN_LOCATION = ["cookies"]
-    JWT_COOKIE_SECURE = False  # Set True in production
-    JWT_ACCESS_COOKIE_NAME = "access_token_cookie"
-    JWT_ACCESS_TOKEN_EXPIRES = 3600  # 1 hour expiration
-    JWT_COOKIE_CSRF_PROTECT = False  # Disable CSRF for now
     
     # MySQL Configuration
-    MYSQL_HOST = os.getenv("MYSQL_HOST", "localhost")
-    MYSQL_USER = os.getenv("MYSQL_USER", "root")
-    MYSQL_PORT = int(os.getenv("MYSQL_PORT", 3306))
-    MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "password")
-    MYSQL_DB = os.getenv("MYSQL_DB", "mydatabase")
+    MYSQL_HOST=localhost
+    MYSQL_USER=root
+    MYSQL_PORT=3306
+    MYSQL_PASSWORD=your_password
+    MYSQL_DB=your_database
+
+    MPESA_CONSUMER_KEY="zuX4O3IsL0UZyGdkQtmUpp7UupDjHkMf"
+    MPESA_CONSUMER_SECRET=consumer_secret_key
+    MPESA_SHORTCODE=your_mpesa_shortcode
+    MPESA_PASSKEY=your_mpesa_passkey
+    MPESA_CALLBACK_URL="https://your_domain.com/path"
+    MPESA_ENV=sandbox/production
+    SUBSCRIPTION_AMOUNT=subscription_amount
     
     # SMTP (Mail) Configuration
-    MAIL_SERVER = os.getenv("MAIL_SERVER", "smtp.gmail.com")
-    MAIL_PORT = int(os.getenv("MAIL_PORT", 587))
-    MAIL_USE_TLS = os.getenv("MAIL_USE_TLS", "true").lower() in ["true", "1", "yes"]
-    MAIL_USERNAME = os.getenv("MAIL_USERNAME")
-    MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
-    MAIL_DEFAULT_SENDER = os.getenv("MAIL_DEFAULT_SENDER")
+    MAIL_SERVER=MAIL_SERVER
+    MAIL_PORT=MAIL_PORT
+    MAIL_USE_TLS=MAIL_USE_TLS
+    MAIL_USERNAME=MAIL_USERNAME
+    MAIL_PASSWORD=MAIL_PASSWORD
+    MAIL_DEFAULT_SENDER=MAIL_DEFAULT_SENDER
     
 
 ## 4. Run the application
