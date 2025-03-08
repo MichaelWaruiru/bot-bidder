@@ -18,8 +18,8 @@ body.light-mode {
 }
 
 #theme-toggle {
-  position: absolute;
-  top: 15px;
+  position: fixed;
+  /* top: 15px; */
   right: 15px;
   background: none;
   border: none;
