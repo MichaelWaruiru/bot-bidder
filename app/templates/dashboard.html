@@ -149,14 +149,14 @@
 
         async function logoutUser() {
           try {
-            const response = await fetch("/api/auth/logout", {
+            const response = await fetch("/auth/logout", {
               method: "POST",
               credentials: "include"
             });
 
             if (response.ok) {
               // alert("Logout successful!");
-              window.location.href="/api/auth/login";
+              window.location.href="/auth/login";
             } else {
               alert("Logout failed. Please try again.")
             }
