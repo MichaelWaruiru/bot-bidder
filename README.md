@@ -23,7 +23,7 @@ Bot bidder is an automated bidding system that allow users to select work types 
 
     cd bot-bidder
 
-## 2. Install dependencies 
+## 2. Install dependencies
     pip install -r requirements.txt
 
 ## 3. Configure Environment Variables
