@@ -39,7 +39,7 @@ Create a .env file and add:
     MYSQL_PASSWORD=your_password
     MYSQL_DB=your_database
 
-    MPESA_CONSUMER_KEY="zuX4O3IsL0UZyGdkQtmUpp7UupDjHkMf"
+    MPESA_CONSUMER_KEY=your_consumer_key
     MPESA_CONSUMER_SECRET=consumer_secret_key
     MPESA_SHORTCODE=your_mpesa_shortcode
     MPESA_PASSKEY=your_mpesa_passkey
